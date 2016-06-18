@@ -10,7 +10,6 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 import android.widget.Button;
-import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.view.View.OnClickListener;
 
@@ -21,15 +20,11 @@ my first app so please don't judge too hard
 
 public class MainActivity extends Activity implements OnDragListener, View.OnLongClickListener, OnClickListener {
 
-    private static final String TAG = "junk";
+    private static final String TAG = "MainActivityJunk";
     MediaPlayer singleSoundByte;                                        //used in playSingleSoundByte method
-    MediaPlayer AllSoundBytes;                                          //used in playAll and playPlaylistSoundByte methods
     int singleSoundByteID;                                              //used in onClick and playSingleSoundByte methods
-    int playlistSoundByteID;                                            //used in giveClonesSound
-    Button drum1, drum2, drum3;                                         //used in onDrag and onClick methods
-    HorizontalScrollView top_hor_container, bottom_hor_container;       //used in onDrag and onClick methods
-    LinearLayout top_lin_container, bottom_lin_container;               //used in onDrag and onClick methods
-    int[] playlist = new int[0];                                        //used in updatePlaylist and playAll methods
+    static Button drum1, drum2, drum3;                                  //used in onDrag and onClick methods
+    LinearLayout cell_1_1, cell_1_2, cell_1_3;                          //used in onDrag and onClick methods
 
 
     @Override
@@ -43,10 +38,9 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         drum3 = (Button) findViewById(R.id.drum3);
 
         //link each layout to its respective xml id
-        top_hor_container = (HorizontalScrollView) findViewById(R.id.top_hor_container);
-        bottom_hor_container = (HorizontalScrollView) findViewById(R.id.bottom_hor_container);
-        top_lin_container = (LinearLayout) findViewById(R.id.top_lin_container);
-        bottom_lin_container = (LinearLayout) findViewById(R.id.bottom_lin_container);
+        cell_1_1 = (LinearLayout) findViewById(R.id.cell_1_1);
+        cell_1_2 = (LinearLayout) findViewById(R.id.cell_1_2);
+        cell_1_3 = (LinearLayout) findViewById(R.id.cell_1_3);
 
         //register a long click listener for the buttons
         drum1.setOnLongClickListener(this);
@@ -54,8 +48,9 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         drum3.setOnLongClickListener(this);
 
         //register drag event listeners for the target layout containers
-        top_hor_container.setOnDragListener(this);
-        bottom_hor_container.setOnDragListener(this);
+        cell_1_1.setOnDragListener(this);
+        cell_1_2.setOnDragListener(this);
+        cell_1_3.setOnDragListener(this);
     }
 
     //called when button has been touched and held
@@ -76,7 +71,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     //used by top and bottom layout containers
     @Override
     public boolean onDrag(View receivingLayoutView, DragEvent dragEvent) {
-        View draggedImageView = (View) dragEvent.getLocalState();
+        View draggedButtonView = (View) dragEvent.getLocalState();
 
         // Handles each of the expected events
         switch (dragEvent.getAction()) {
@@ -123,57 +118,28 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 the action only sent here if ACTION_DRAG_STARTED returned true
                 return true if successfully handled the drop else false*/
 
-                if (top_hor_container == receivingLayoutView) {     //if dropped in top linear layout run this code
+                //Looks at id of view button was dropped in and adds that button clone in said view (cell)
+                switch (receivingLayoutView.getId()) {
+                    case R.id.cell_1_1:
 
-                    switch (draggedImageView.getId()) {
-                        case R.id.drum1:
+                        Log.i(TAG, "cell_1_1");
 
-                            Log.i(TAG, "button drum1");
-                            // create new button so that we don't have to use removeView on the original button
+                        buttonSelection(draggedButtonView, receivingLayoutView);    //sends button and cell into buttonSelection method
+                        return true;
 
-                            Button drum1Cloned = new Button(this);
-                            drum1Cloned.setId(R.id.drum1Cloned);          //create id in ids.xml so that new button can be referred to in onClick method
-                            drum1Cloned.setText(drum1.getText());         //getText so that buttons looks identical
-                            drum1Cloned.setOnClickListener(this);         //setOnClickListener so that new button id can be sent to onClick method when tapped
-                            drum1Cloned.setOnLongClickListener(this);     //setOnLongClickListener so that new button can be dragged
-                            top_lin_container.addView(drum1Cloned);       //add the new drum2Cloned button to top linear layout
-                            updatePlaylist(R.id.drum1Cloned);             //pass in drum1Cloned id into updatePlaylist method so that it can be indexed into the playlist array
-                            return true;
+                    case R.id.cell_1_2:
 
-                        case R.id.drum2:
+                        Log.i(TAG, "cell_1_2");
 
-                            Log.i(TAG, "button drum2");
+                        buttonSelection(draggedButtonView, receivingLayoutView);
+                        return true;
 
-                            Button drum2Cloned = new Button(this);
-                            drum2Cloned.setId(R.id.drum2Cloned);
-                            drum2Cloned.setText(drum2.getText());
-                            drum2Cloned.setOnClickListener(this);
-                            drum2Cloned.setOnLongClickListener(this);
-                            top_lin_container.addView(drum2Cloned);
-                            updatePlaylist(R.id.drum2Cloned);
+                    case R.id.cell_1_3:
 
-                            return true;
+                        Log.i(TAG, "cell_1_3");
 
-                        case R.id.drum3:
-
-                            Log.i(TAG, "button drum3");
-
-                            Button drum3Cloned = new Button(this);
-                            drum3Cloned.setId(R.id.drum3Cloned);
-                            drum3Cloned.setText(drum3.getText());
-                            drum3Cloned.setOnClickListener(this);
-                            drum3Cloned.setOnLongClickListener(this);
-                            top_lin_container.addView(drum3Cloned);
-                            updatePlaylist(R.id.drum3Cloned);
-
-                            return true;
-
-                        default:
-                            Log.i(TAG, "in default");
-                            return false;
-                    }
-                } else {
-                    Log.i(TAG, "Did not drop in top_container");
+                        buttonSelection(draggedButtonView, receivingLayoutView);
+                        return true;
 
                 }
 
@@ -198,10 +164,10 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.drum1:
-                singleSoundByteID = R.raw.drum1;   //give button sound byte id to be used in playSingleSoundByte method
+                singleSoundByteID = R.raw.drum1;    //give button sound byte id to be used in playSingleSoundByte method
                 playSingleSoundByte();
                 break;
-            case R.id.drum1Cloned:  //cloned button must play the same sound byte
+            case R.id.drum1Cloned:                  //cloned button must play the same sound byte
                 singleSoundByteID = R.raw.drum1;
                 playSingleSoundByte();
                 break;
@@ -240,68 +206,62 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
             singleSoundByte.start();
         }
     }
-//
-    public void updatePlaylist(int clonedButtonID) {
 
-        //define the new array with an extra slot to store the next button id
-        int[] newPlaylist = new int[playlist.length + 1];
+    public boolean buttonSelection(View button, View cell) {
 
-        //copy values into new array
-        for (int i = 0; i < playlist.length; i++)
-            newPlaylist[i] = playlist[i];
+        LinearLayout cellHolder = (LinearLayout) findViewById(cell.getId());    //gets the id of cell and places it in cellHolder
 
-        //add new value to the new array
-        newPlaylist[newPlaylist.length - 1] = clonedButtonID;
+        switch (button.getId()) {
+            case R.id.drum1:
 
-        //set the newPlaylist as the default playlist
-        playlist = newPlaylist;
-    }
+                Log.i(TAG, "button drum1");
+                // create new button so that we don't have to use removeView on the original button
 
-    //runs when the play button is tapped
-    //must cycle through the entire playlist and play each sound byte sequentially
-    public void playAll(View v) {
+                Button drum1Cloned = new Button(this);
+                drum1Cloned.setId(R.id.drum1Cloned);          //create id in ids.xml so that new button can be referred to in onClick method
+                drum1Cloned.setText(drum1.getText());         //getText so that buttons look identical
+                drum1Cloned.setOnClickListener(this);         //setOnClickListener so that new button id can be sent to onClick method when tapped
+                drum1Cloned.setOnLongClickListener(this);     //setOnLongClickListener so that new button can be dragged
+                drum1Cloned.setWidth(drum1.getWidth());       //setWidth so that buttons look identical
+                drum1Cloned.setHeight(drum1.getHeight());     //setWidth so that buttons look identical
+                cellHolder.addView(drum1Cloned);              //add the new drum2Cloned button to top linear layout
+                return true;
 
-        for (int i = 0; i < playlist.length; i++) {     //cycle through the entire playlist
-            giveClonesSound(playlist[i]);
+            case R.id.drum2:
 
-            while (AllSoundBytes.isPlaying()) {         //will continue to loop while AllSoundBytes is playing its respective sound byte in the playPlaylistSoundByte method
+                Log.i(TAG, "button drum2");
 
-            }
-        }
-    }
+                Button drum2Cloned = new Button(this);
+                drum2Cloned.setId(R.id.drum2Cloned);
+                drum2Cloned.setText(drum2.getText());
+                drum2Cloned.setOnClickListener(this);
+                drum2Cloned.setOnLongClickListener(this);
+                drum2Cloned.setWidth(drum2.getWidth());
+                drum2Cloned.setHeight(drum2.getHeight());
+                cellHolder.addView(drum2Cloned);
 
-    //gives the cloned buttons a sound byte id
-    public void giveClonesSound(int id) {
-        switch (id) {
-            case R.id.drum1Cloned:
-                playlistSoundByteID = R.raw.drum1;   //give button sound byte id to be used in playPlaylistSoundByte method
-                playPlaylistSoundByte();
-                break;
-            case R.id.drum2Cloned:
-                playlistSoundByteID = R.raw.drum2;
-                playPlaylistSoundByte();
-                break;
-            case R.id.drum3Cloned:
-                playlistSoundByteID = R.raw.drum3;
-                playPlaylistSoundByte();
-                break;
+                return true;
+
+            case R.id.drum3:
+
+                Log.i(TAG, "button drum3");
+
+                Button drum3Cloned = new Button(this);
+                drum3Cloned.setId(R.id.drum3Cloned);
+                drum3Cloned.setText(drum3.getText());
+                drum3Cloned.setOnClickListener(this);
+                drum3Cloned.setOnLongClickListener(this);
+                drum3Cloned.setWidth(drum3.getWidth());
+                drum3Cloned.setHeight(drum3.getHeight());
+                cellHolder.addView(drum3Cloned);
+
+                return true;
+
             default:
-                break;
+                Log.i(TAG, "in default");
+                return false;
         }
     }
-
-    //plays the individual sound byte from the playlist array
-    public void playPlaylistSoundByte() {
-        AllSoundBytes = MediaPlayer.create(this, playlistSoundByteID);
-        AllSoundBytes.start();
-        AllSoundBytes.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer AllSoundBytes) {
-                AllSoundBytes.release();
-            }
-        });
-    }
-
 }
 
 

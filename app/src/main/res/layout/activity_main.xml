@@ -8,8 +8,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_height="50dp"
         android:background="#B0BEC5"
         android:orientation="horizontal">
 
@@ -24,16 +23,16 @@
             android:id="@+id/pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onClick"
             android:layout_toRightOf="@id/play"
+            android:onClick="onClick"
             android:text="pause" />
 
         <Button
             android:id="@+id/stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="onClick"
             android:layout_toRightOf="@id/pause"
+            android:onClick="onClick"
             android:text="stop" />
 
         <Button
@@ -48,26 +47,205 @@
     <HorizontalScrollView
         android:id="@+id/top_hor_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="#CFD8DC">
+        android:layout_height="150dp"
+        android:background="#616161">
 
-        <LinearLayout
-            android:id="@+id/top_lin_container"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="start"
-            android:orientation="horizontal">
+        <TableLayout
+            android:id="@+id/top_table_container"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="#CFD8DC">
 
-        </LinearLayout>
+            <TableRow>
+
+                <LinearLayout
+                    android:id="@+id/cell_1_1"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_1_2"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_1_3"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_1_4"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_1_5"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_1_6"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_1_7"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_1_8"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+            </TableRow>
+
+            <TableRow>
+
+                <LinearLayout
+                    android:id="@+id/cell_2_1"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_2_2"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_2_3"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_2_4"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_2_5"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_2_6"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_2_7"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_2_8"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+            </TableRow>
+
+            <TableRow>
+
+                <LinearLayout
+                    android:id="@+id/cell_3_1"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_3_2"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_3_3"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_3_4"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_3_5"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_3_6"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_3_7"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#FFCDD2"
+                    android:orientation="horizontal" />
+
+                <LinearLayout
+                    android:id="@+id/cell_3_8"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:background="#C8E6C9"
+                    android:orientation="horizontal" />
+
+            </TableRow>
+
+        </TableLayout>
 
     </HorizontalScrollView>
+
 
     <HorizontalScrollView
         android:id="@+id/bottom_hor_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="0.6"
+        android:layout_weight="1"
         android:background="#616161">
 
         <LinearLayout
@@ -79,24 +257,23 @@
 
             <Button
                 android:id="@+id/drum1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
                 android:onClick="onClick"
                 android:text="drum1" />
 
             <Button
                 android:id="@+id/drum2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
                 android:onClick="onClick"
                 android:text="drum2" />
 
             <Button
                 android:id="@+id/drum3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
                 android:onClick="onClick"
-                android:tag=""
                 android:text="drum3" />
 
         </LinearLayout>
