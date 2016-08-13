@@ -8,7 +8,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
         android:background="#B0BEC5"
         android:orientation="horizontal">
 
@@ -47,194 +47,116 @@
     <HorizontalScrollView
         android:id="@+id/top_hor_container"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
+        android:layout_height="120dp"
         android:background="#616161">
 
         <TableLayout
             android:id="@+id/top_table_container"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="120dp"
             android:background="#CFD8DC">
 
             <TableRow>
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/cell_1_1"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
                     android:background="#FFCDD2"
+                    android:text="1"
+                    android:textSize="30dp"
+                    android:textAlignment="center"
                     android:orientation="horizontal" />
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/cell_1_2"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
                     android:background="#C8E6C9"
+                    android:text="2"
+                    android:textSize="30dp"
+                    android:textAlignment="center"
                     android:orientation="horizontal" />
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/cell_1_3"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
                     android:background="#FFCDD2"
+                    android:text="3"
+                    android:textSize="30dp"
+                    android:textAlignment="center"
                     android:orientation="horizontal" />
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/cell_1_4"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
                     android:background="#C8E6C9"
+                    android:text="4"
+                    android:textSize="30dp"
+                    android:textAlignment="center"
                     android:orientation="horizontal" />
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/cell_1_5"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
                     android:background="#FFCDD2"
+                    android:text="5"
+                    android:textSize="30dp"
+                    android:textAlignment="center"
                     android:orientation="horizontal" />
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/cell_1_6"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
                     android:background="#C8E6C9"
+                    android:text="6"
+                    android:textSize="30dp"
+                    android:textAlignment="center"
                     android:orientation="horizontal" />
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/cell_1_7"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
                     android:background="#FFCDD2"
+                    android:text="7"
+                    android:textSize="30dp"
+                    android:textAlignment="center"
                     android:orientation="horizontal" />
 
-                <LinearLayout
+                <TextView
                     android:id="@+id/cell_1_8"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
+                    android:layout_width="80dp"
+                    android:layout_height="40dp"
                     android:background="#C8E6C9"
+                    android:text="8"
+                    android:textSize="30dp"
+                    android:textAlignment="center"
                     android:orientation="horizontal" />
 
             </TableRow>
 
-            <TableRow>
+            <RelativeLayout
+                android:id="@+id/rel1"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="#B3E5FC"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:id="@+id/cell_2_1"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#C8E6C9"
-                    android:orientation="horizontal" />
+            </RelativeLayout>
 
-                <LinearLayout
-                    android:id="@+id/cell_2_2"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#FFCDD2"
-                    android:orientation="horizontal" />
+            <RelativeLayout
+                android:id="@+id/rel2"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="#B0BEC5"
+                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:id="@+id/cell_2_3"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#C8E6C9"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_2_4"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#FFCDD2"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_2_5"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#C8E6C9"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_2_6"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#FFCDD2"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_2_7"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#C8E6C9"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_2_8"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#FFCDD2"
-                    android:orientation="horizontal" />
-
-            </TableRow>
-
-            <TableRow>
-
-                <LinearLayout
-                    android:id="@+id/cell_3_1"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#FFCDD2"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_3_2"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#C8E6C9"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_3_3"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#FFCDD2"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_3_4"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#C8E6C9"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_3_5"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#FFCDD2"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_3_6"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#C8E6C9"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_3_7"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#FFCDD2"
-                    android:orientation="horizontal" />
-
-                <LinearLayout
-                    android:id="@+id/cell_3_8"
-                    android:layout_width="100dp"
-                    android:layout_height="50dp"
-                    android:background="#C8E6C9"
-                    android:orientation="horizontal" />
-
-            </TableRow>
+            </RelativeLayout>
 
         </TableLayout>
 
@@ -257,22 +179,22 @@
 
             <Button
                 android:id="@+id/drum1"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
+                android:layout_width="80dp"
+                android:layout_height="40dp"
                 android:onClick="onClick"
                 android:text="drum1" />
 
             <Button
                 android:id="@+id/drum2"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
+                android:layout_width="160dp"
+                android:layout_height="40dp"
                 android:onClick="onClick"
                 android:text="drum2" />
 
             <Button
                 android:id="@+id/drum3"
-                android:layout_width="100dp"
-                android:layout_height="50dp"
+                android:layout_width="240dp"
+                android:layout_height="40dp"
                 android:onClick="onClick"
                 android:text="drum3" />
 

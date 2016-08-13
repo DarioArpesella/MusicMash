@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipDescription;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.view.View.OnDragListener;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.view.View.OnClickListener;
+import android.widget.RelativeLayout;
 
 
 /*put a synopsis here
@@ -24,7 +26,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     MediaPlayer singleSoundByte;                                        //used in playSingleSoundByte method
     int singleSoundByteID;                                              //used in onClick and playSingleSoundByte methods
     static Button drum1, drum2, drum3;                                  //used in onDrag and onClick methods
-    LinearLayout cell_1_1, cell_1_2, cell_1_3;                          //used in onDrag and onClick methods
+    RelativeLayout rel1, rel2;                                          //used in onDrag and onClick methods
 
 
     @Override
@@ -38,9 +40,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         drum3 = (Button) findViewById(R.id.drum3);
 
         //link each layout to its respective xml id
-        cell_1_1 = (LinearLayout) findViewById(R.id.cell_1_1);
-        cell_1_2 = (LinearLayout) findViewById(R.id.cell_1_2);
-        cell_1_3 = (LinearLayout) findViewById(R.id.cell_1_3);
+        rel1 = (RelativeLayout) findViewById(R.id.rel1);
+        rel2 = (RelativeLayout) findViewById(R.id.rel2);
 
         //register a long click listener for the buttons
         drum1.setOnLongClickListener(this);
@@ -48,9 +49,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         drum3.setOnLongClickListener(this);
 
         //register drag event listeners for the target layout containers
-        cell_1_1.setOnDragListener(this);
-        cell_1_2.setOnDragListener(this);
-        cell_1_3.setOnDragListener(this);
+        rel1.setOnDragListener(this);
+        rel2.setOnDragListener(this);
     }
 
     //called when button has been touched and held
@@ -117,26 +117,17 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 drag shadow released over the target view
                 the action only sent here if ACTION_DRAG_STARTED returned true
                 return true if successfully handled the drop else false*/
+                float x = draggedButtonView.getX();
+                Log.i(TAG, "x coord" + x);
 
-                //Looks at id of view button was dropped in and adds that button clone in said view (cell)
+                //Looks at id of view button was dropped in and adds that button clone in said view (relative layout)
                 switch (receivingLayoutView.getId()) {
-                    case R.id.cell_1_1:
+                    case R.id.rel1:
 
-                        Log.i(TAG, "cell_1_1");
-
-                        buttonSelection(draggedButtonView, receivingLayoutView);    //sends button and cell into buttonSelection method
+                        buttonSelection(draggedButtonView, receivingLayoutView);    //sends button and layout into buttonSelection method
                         return true;
 
-                    case R.id.cell_1_2:
-
-                        Log.i(TAG, "cell_1_2");
-
-                        buttonSelection(draggedButtonView, receivingLayoutView);
-                        return true;
-
-                    case R.id.cell_1_3:
-
-                        Log.i(TAG, "cell_1_3");
+                    case R.id.rel2:
 
                         buttonSelection(draggedButtonView, receivingLayoutView);
                         return true;
@@ -207,9 +198,9 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         }
     }
 
-    public boolean buttonSelection(View button, View cell) {
+    public boolean buttonSelection(View button, View layout) {
 
-        LinearLayout cellHolder = (LinearLayout) findViewById(cell.getId());    //gets the id of cell and places it in cellHolder
+        RelativeLayout layoutHolder = (RelativeLayout) findViewById(layout.getId());    //gets the id of layout and places it in layoutHolder
 
         switch (button.getId()) {
             case R.id.drum1:
@@ -223,8 +214,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 drum1Cloned.setOnClickListener(this);         //setOnClickListener so that new button id can be sent to onClick method when tapped
                 drum1Cloned.setOnLongClickListener(this);     //setOnLongClickListener so that new button can be dragged
                 drum1Cloned.setWidth(drum1.getWidth());       //setWidth so that buttons look identical
-                drum1Cloned.setHeight(drum1.getHeight());     //setWidth so that buttons look identical
-                cellHolder.addView(drum1Cloned);              //add the new drum2Cloned button to top linear layout
+                drum1Cloned.setHeight(drum1.getHeight());     //setHeight so that buttons look identical
+                layoutHolder.addView(drum1Cloned);            //add the new drum1Cloned button to layout
                 return true;
 
             case R.id.drum2:
@@ -238,7 +229,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 drum2Cloned.setOnLongClickListener(this);
                 drum2Cloned.setWidth(drum2.getWidth());
                 drum2Cloned.setHeight(drum2.getHeight());
-                cellHolder.addView(drum2Cloned);
+                layoutHolder.addView(drum2Cloned);
 
                 return true;
 
@@ -253,7 +244,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 drum3Cloned.setOnLongClickListener(this);
                 drum3Cloned.setWidth(drum3.getWidth());
                 drum3Cloned.setHeight(drum3.getHeight());
-                cellHolder.addView(drum3Cloned);
+                layoutHolder.addView(drum3Cloned);
 
                 return true;
 
