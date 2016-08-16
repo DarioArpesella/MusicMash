@@ -3,15 +3,14 @@ package com.example.android.musicmash;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.text.Layout;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.view.View.OnClickListener;
 import android.widget.RelativeLayout;
 
@@ -27,6 +26,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     int singleSoundByteID;                                              //used in onClick and playSingleSoundByte methods
     static Button drum1, drum2, drum3;                                  //used in onDrag and onClick methods
     RelativeLayout rel1, rel2;                                          //used in onDrag and onClick methods
+    float snappedXCoord;                                                //used in snap method
 
 
     @Override
@@ -117,8 +117,11 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 drag shadow released over the target view
                 the action only sent here if ACTION_DRAG_STARTED returned true
                 return true if successfully handled the drop else false*/
-                float x = draggedButtonView.getX();
-                Log.i(TAG, "x coord" + x);
+
+
+                //dragEvent.getX() gets the x coordinate of where button was dropped.
+                // Coordinates then get sent to the snap method
+                snappedXCoord = snap(dragEvent.getX());
 
                 //Looks at id of view button was dropped in and adds that button clone in said view (relative layout)
                 switch (receivingLayoutView.getId()) {
@@ -215,6 +218,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 drum1Cloned.setOnLongClickListener(this);     //setOnLongClickListener so that new button can be dragged
                 drum1Cloned.setWidth(drum1.getWidth());       //setWidth so that buttons look identical
                 drum1Cloned.setHeight(drum1.getHeight());     //setHeight so that buttons look identical
+                drum1Cloned.setX(snappedXCoord - (drum1.getWidth()/2));     //positions button where dropped ( width /2 , because x-coord of drop is
+                                                                            // where finger was released and x-coord of button is at the left side of button)
                 layoutHolder.addView(drum1Cloned);            //add the new drum1Cloned button to layout
                 return true;
 
@@ -229,6 +234,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 drum2Cloned.setOnLongClickListener(this);
                 drum2Cloned.setWidth(drum2.getWidth());
                 drum2Cloned.setHeight(drum2.getHeight());
+                drum2Cloned.setX(snappedXCoord - (drum2.getWidth()/2));
                 layoutHolder.addView(drum2Cloned);
 
                 return true;
@@ -244,6 +250,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 drum3Cloned.setOnLongClickListener(this);
                 drum3Cloned.setWidth(drum3.getWidth());
                 drum3Cloned.setHeight(drum3.getHeight());
+                drum3Cloned.setX(snappedXCoord - (drum3.getWidth()/2));
                 layoutHolder.addView(drum3Cloned);
 
                 return true;
@@ -253,7 +260,21 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 return false;
         }
     }
+
+    //gives the button which was dropped a "snap" function of 40dp increments
+    private float snap(float px)
+    {
+        float dpXCoord = (px / Resources.getSystem().getDisplayMetrics().density);  //takes the x-coordinates in pixels and converts to dp
+        dpXCoord = 40*(Math.round (dpXCoord/40));                                   //rounds off the dp to the closest increment of 40
+
+        Log.i(TAG, "x coord " + dpXCoord);                                          //prints x-coordinates in dp and not px
+
+        dpXCoord = (dpXCoord * Resources.getSystem().getDisplayMetrics().density);  //converts back to px's
+        return dpXCoord;
+    }
 }
+
+
 
 
 
