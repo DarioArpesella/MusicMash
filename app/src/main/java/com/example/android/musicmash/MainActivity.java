@@ -26,7 +26,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     int singleSoundByteID;                                              //used in onClick and playSingleSoundByte methods
     static Button drum1, drum2, drum3;                                  //used in onDrag and onClick methods
     RelativeLayout rel1, rel2;                                          //used in onDrag and onClick methods
-    float snappedXCoord;                                                //used in snap method
+    int snappedXCoord;                                                  //used in snap method
+    int drumPlacement1[] = new int[19];
 
 
     @Override
@@ -121,7 +122,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
                 //dragEvent.getX() gets the x coordinate of where button was dropped.
                 // Coordinates then get sent to the snap method
-                snappedXCoord = snap(dragEvent.getX());
+                snappedXCoord = snap((int)dragEvent.getX());
 
                 //Looks at id of view button was dropped in and adds that button clone in said view (relative layout)
                 switch (receivingLayoutView.getId()) {
@@ -220,24 +221,38 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 drum1Cloned.setHeight(drum1.getHeight());     //setHeight so that buttons look identical
                 drum1Cloned.setX(snappedXCoord - (drum1.getWidth()/2));     //positions button where dropped ( width /2 , because x-coord of drop is
                                                                             // where finger was released and x-coord of button is at the left side of button)
+
+                Log.i(TAG, "snappedXCoord = " + snappedXCoord);
+                Log.i(TAG, "drum1.getWidth() = " + drum1.getWidth());
+                Log.i(TAG, "(snappedXCoord - (drum1.getWidth()/2)) = " + (snappedXCoord - (drum1.getWidth()/2)));
+
                 layoutHolder.addView(drum1Cloned);            //add the new drum1Cloned button to layout
                 return true;
 
             case R.id.drum2:
 
-                Log.i(TAG, "button drum2");
+                if (isSpaceOpen(drum2.getWidth())) {
 
-                Button drum2Cloned = new Button(this);
-                drum2Cloned.setId(R.id.drum2Cloned);
-                drum2Cloned.setText(drum2.getText());
-                drum2Cloned.setOnClickListener(this);
-                drum2Cloned.setOnLongClickListener(this);
-                drum2Cloned.setWidth(drum2.getWidth());
-                drum2Cloned.setHeight(drum2.getHeight());
-                drum2Cloned.setX(snappedXCoord - (drum2.getWidth()/2));
-                layoutHolder.addView(drum2Cloned);
+                    occupySpace(drum2.getWidth());
 
-                return true;
+                    Log.i(TAG, "button drum2");
+
+                    Button drum2Cloned = new Button(this);
+                    drum2Cloned.setId(R.id.drum2Cloned);
+                    drum2Cloned.setText(drum2.getText());
+                    drum2Cloned.setOnClickListener(this);
+                    drum2Cloned.setOnLongClickListener(this);
+                    drum2Cloned.setWidth(drum2.getWidth());
+                    drum2Cloned.setHeight(drum2.getHeight());
+                    drum2Cloned.setX(snappedXCoord - (drum2.getWidth() / 2));
+                    layoutHolder.addView(drum2Cloned);
+
+                    return true;
+                }
+                else {
+                    Log.i(TAG, "cant insert button here");
+                    return false;
+                }
 
             case R.id.drum3:
 
@@ -262,17 +277,63 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     }
 
     //gives the button which was dropped a "snap" function of 40dp increments
-    private float snap(float px)
+    private int snap(int px)
     {
-        float dpXCoord = (px / Resources.getSystem().getDisplayMetrics().density);  //takes the x-coordinates in pixels and converts to dp
+        int dpXCoord = pxToDp(px);  //takes the x-coordinates in pixels and converts to dp
         dpXCoord = 40*(Math.round (dpXCoord/40));                                   //rounds off the dp to the closest increment of 40
 
-        Log.i(TAG, "x coord " + dpXCoord);                                          //prints x-coordinates in dp and not px
+        Log.i(TAG, "x coord in dp not px " + dpXCoord);                             //prints x-coordinates in dp and not px
 
-        dpXCoord = (dpXCoord * Resources.getSystem().getDisplayMetrics().density);  //converts back to px's
+        dpXCoord = dpToPx(dpXCoord);                                                //converts back to px's
         return dpXCoord;
     }
+
+    //converts dp to px's
+    public static int dpToPx(int dp)
+    {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    //converts px's to dp
+    public static int pxToDp(int px)
+    {
+        return (int) (px / Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    private boolean isSpaceOpen(int buttonwidth)
+    {
+        int x;
+        boolean spaceOpen = true;
+
+        for(int i = 0; dpToPx(40)*i/buttonwidth < 1; i++) {
+
+            x = ((snappedXCoord - (buttonwidth/2))/dpToPx(40)) + i;
+
+            if (drumPlacement1[x] == 1) {
+
+                spaceOpen = false;
+                break;
+            }
+        } return spaceOpen;
+    }
+
+    private void occupySpace(int buttonwidth)
+    {
+        int x;
+        float u;
+        int i = 0;
+
+        do {
+            x = ((snappedXCoord - (buttonwidth/2))/dpToPx(40)) + i;
+            drumPlacement1[x] = 1;
+            i++;
+            u = dpToPx(40)*i;
+        }
+        while (u/buttonwidth < 1);
+    }
 }
+
+
 
 
 
