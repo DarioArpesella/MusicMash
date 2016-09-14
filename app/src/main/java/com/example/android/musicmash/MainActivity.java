@@ -13,6 +13,7 @@ import android.view.View.OnDragListener;
 import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 
 /*put a synopsis here
@@ -182,6 +183,12 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 singleSoundByteID = R.raw.drum3;
                 playSingleSoundByte();
                 break;
+            case R.id.playlist:                     //used to show array index values
+                runLoop();
+                break;
+            case R.id.test:                         //used to test random shit
+                test();
+                break;
             default:
                 break;
         }
@@ -221,11 +228,6 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 drum1Cloned.setHeight(drum1.getHeight());     //setHeight so that buttons look identical
                 drum1Cloned.setX(snappedXCoord - (drum1.getWidth()/2));     //positions button where dropped ( width /2 , because x-coord of drop is
                                                                             // where finger was released and x-coord of button is at the left side of button)
-
-                Log.i(TAG, "snappedXCoord = " + snappedXCoord);
-                Log.i(TAG, "drum1.getWidth() = " + drum1.getWidth());
-                Log.i(TAG, "(snappedXCoord - (drum1.getWidth()/2)) = " + (snappedXCoord - (drum1.getWidth()/2)));
-
                 layoutHolder.addView(drum1Cloned);            //add the new drum1Cloned button to layout
                 return true;
 
@@ -272,6 +274,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
             default:
                 Log.i(TAG, "in default");
+                Toast.makeText(getApplicationContext(), "msg msg", Toast.LENGTH_SHORT).show();
                 return false;
         }
     }
@@ -279,13 +282,16 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     //gives the button which was dropped a "snap" function of 40dp increments
     private int snap(int px)
     {
-        int dpXCoord = pxToDp(px);  //takes the x-coordinates in pixels and converts to dp
-        dpXCoord = 40*(Math.round (dpXCoord/40));                                   //rounds off the dp to the closest increment of 40
+        float dpXCoord = pxToDp(px);  //takes the x-coordinates in pixels and converts to dp
 
-        Log.i(TAG, "x coord in dp not px " + dpXCoord);                             //prints x-coordinates in dp and not px
+        Log.i(TAG, "x coord in dp before rounding " + dpXCoord);
 
-        dpXCoord = dpToPx(dpXCoord);                                                //converts back to px's
-        return dpXCoord;
+        dpXCoord = 40*(Math.round(dpXCoord/40));                                    //rounds off the dp to the closest increment of 40
+
+        Log.i(TAG, "x coord in dp after rounding = " + dpXCoord);                             //prints x-coordinates in dp and not px
+
+        dpXCoord = dpToPx((int) dpXCoord);                                                //converts back to px's
+        return (int) dpXCoord;
     }
 
     //converts dp to px's
@@ -300,23 +306,27 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         return (int) (px / Resources.getSystem().getDisplayMetrics().density);
     }
 
-    private boolean isSpaceOpen(int buttonwidth)
+    //evaluates if the button has enough space to fit in drop zone
+    private boolean isSpaceOpen(int buttonwidth)                        //uses the width of the button for parameter calculations
     {
         int x;
-        boolean spaceOpen = true;
+        boolean spaceOpen = true;                                       //return default of true when the if statement doesn't execute
 
-        for(int i = 0; dpToPx(40)*i/buttonwidth < 1; i++) {
+        //cycles through the length of the button at this specific
+        //area where button was dropped in the array
+        for(int i = 0; dpToPx(40)*i/buttonwidth < 1; i++) {             //when dpToPx(40)*i/buttonwidth reaches a value 1 then means has gone through entire width of button
 
-            x = ((snappedXCoord - (buttonwidth/2))/dpToPx(40)) + i;
+            x = ((snappedXCoord - (buttonwidth/2))/dpToPx(40)) + i;     //formula to determine index of the array
 
-            if (drumPlacement1[x] == 1) {
+            if (drumPlacement1[x] == 1) {                               //if that specific index of the array = 1 then that space is already occupied
 
                 spaceOpen = false;
                 break;
             }
-        } return spaceOpen;
+        } return spaceOpen;                                             //return either true or false
     }
 
+    //renders area where button was dropped unavailable/full
     private void occupySpace(int buttonwidth)
     {
         int x;
@@ -324,13 +334,51 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         int i = 0;
 
         do {
-            x = ((snappedXCoord - (buttonwidth/2))/dpToPx(40)) + i;
-            drumPlacement1[x] = 1;
+            x = ((snappedXCoord - (buttonwidth/2))/dpToPx(40)) + i;     //formula to determine index of the array
+            drumPlacement1[x] = 1;                                      //assigns a value of 1 to index to close the space
             i++;
             u = dpToPx(40)*i;
         }
         while (u/buttonwidth < 1);
     }
+
+    public void runLoop()
+    {
+        int i;
+
+        for(i = 0; i < drumPlacement1.length; i++) {
+            Log.i(TAG, "drumPlacement1 [" + i + "] = " + drumPlacement1[i] );
+        }
+    }
+
+    public void test()
+    {
+        float a = 0;
+        float b = 1;
+        float c = 19;
+        float d = 20;
+        float e = 21;
+        float f = 39;
+        float g = 40;
+        float h = 41;
+        float i = 59;
+        float j = 60;
+        float k = 61;
+
+        Log.i(TAG, "Math.round : " + a + " = " +  40*(Math.round(a/40)) );
+        Log.i(TAG, "Math.round : " + b + " = " +  40*(Math.round(b/40)) );
+        Log.i(TAG, "Math.round : " + c + " = " +  40*(Math.round(c/40)) );
+        Log.i(TAG, "Math.round : " + d + " = " +  40*(Math.round(d/40)) );
+        Log.i(TAG, "Math.round : " + e + " = " +  40*(Math.round(e/40)) );
+        Log.i(TAG, "Math.round : " + f + " = " +  40*(Math.round(f/40)) );
+        Log.i(TAG, "Math.round : " + g + " = " +  40*(Math.round(g/40)) );
+        Log.i(TAG, "Math.round : " + h + " = " +  40*(Math.round(h/40)) );
+        Log.i(TAG, "Math.round : " + i + " = " +  40*(Math.round(i/40)) );
+        Log.i(TAG, "Math.round : " + j + " = " +  40*(Math.round(j/40)) );
+        Log.i(TAG, "Math.round : " + k + " = " +  40*(Math.round(k/40)) );
+    }
+
+
 }
 
 
