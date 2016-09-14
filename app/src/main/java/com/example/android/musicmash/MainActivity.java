@@ -252,7 +252,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     return true;
                 }
                 else {
-                    Log.i(TAG, "cant insert button here");
+                    Log.i(TAG, "can't insert button here");
                     return false;
                 }
 
