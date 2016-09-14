@@ -274,7 +274,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
             default:
                 Log.i(TAG, "in default");
-                Toast.makeText(getApplicationContext(), "msg msg", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "buttonSelection method default case - Can't place button ", Toast.LENGTH_SHORT).show();
                 return false;
         }
     }
