@@ -28,7 +28,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     static Button drum1, drum2, drum3;                                  //used in onDrag and onClick methods
     RelativeLayout rel1, rel2;                                          //used in onDrag and onClick methods
     int snappedXCoord;                                                  //used in snap method
-    int drumPlacement1[] = new int[19];
+    int drumPlacement1[] = new int[19];                                 //used in isSpaceOpen and occupySpace methods
+    int drumPlacement2[] = new int[19];
 
 
     @Override
@@ -213,29 +214,30 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
         RelativeLayout layoutHolder = (RelativeLayout) findViewById(layout.getId());    //gets the id of layout and places it in layoutHolder
 
-        switch (button.getId()) {
-            case R.id.drum1:
+        if (isSpaceOpen(button.getWidth(),layout)) {
 
-                Log.i(TAG, "button drum1");
-                // create new button so that we don't have to use removeView on the original button
+            occupySpace(button.getWidth(),layout);
 
-                Button drum1Cloned = new Button(this);
-                drum1Cloned.setId(R.id.drum1Cloned);          //create id in ids.xml so that new button can be referred to in onClick method
-                drum1Cloned.setText(drum1.getText());         //getText so that buttons look identical
-                drum1Cloned.setOnClickListener(this);         //setOnClickListener so that new button id can be sent to onClick method when tapped
-                drum1Cloned.setOnLongClickListener(this);     //setOnLongClickListener so that new button can be dragged
-                drum1Cloned.setWidth(drum1.getWidth());       //setWidth so that buttons look identical
-                drum1Cloned.setHeight(drum1.getHeight());     //setHeight so that buttons look identical
-                drum1Cloned.setX(snappedXCoord - (drum1.getWidth()/2));     //positions button where dropped ( width /2 , because x-coord of drop is
-                                                                            // where finger was released and x-coord of button is at the left side of button)
-                layoutHolder.addView(drum1Cloned);            //add the new drum1Cloned button to layout
-                return true;
+            switch (button.getId()) {
+                case R.id.drum1:
 
-            case R.id.drum2:
+                    Log.i(TAG, "button drum1");
+                    // create new button so that we don't have to use removeView on the original button
 
-                if (isSpaceOpen(drum2.getWidth())) {
+                    Button drum1Cloned = new Button(this);
+                    drum1Cloned.setId(R.id.drum1Cloned);          //create id in ids.xml so that new button can be referred to in onClick method
+                    drum1Cloned.setText(drum1.getText());         //getText so that buttons look identical
+                    drum1Cloned.setOnClickListener(this);         //setOnClickListener so that new button id can be sent to onClick method when tapped
+                    drum1Cloned.setOnLongClickListener(this);     //setOnLongClickListener so that new button can be dragged
+                    drum1Cloned.setWidth(drum1.getWidth());       //setWidth so that buttons look identical
+                    drum1Cloned.setHeight(drum1.getHeight());     //setHeight so that buttons look identical
+                    drum1Cloned.setX(snappedXCoord - (drum1.getWidth() / 2));   //positions button where dropped ( width /2 , because x-coord of drop is
+                                                                                // where finger was released and x-coord of button is at the left side of button)
+                    layoutHolder.addView(drum1Cloned);            //add the new drum1Cloned button to layout
 
-                    occupySpace(drum2.getWidth());
+                    return true;
+
+                case R.id.drum2:
 
                     Log.i(TAG, "button drum2");
 
@@ -250,32 +252,31 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     layoutHolder.addView(drum2Cloned);
 
                     return true;
-                }
-                else {
-                    Log.i(TAG, "can't insert button here");
+
+                case R.id.drum3:
+
+                    Log.i(TAG, "button drum3");
+
+                    Button drum3Cloned = new Button(this);
+                    drum3Cloned.setId(R.id.drum3Cloned);
+                    drum3Cloned.setText(drum3.getText());
+                    drum3Cloned.setOnClickListener(this);
+                    drum3Cloned.setOnLongClickListener(this);
+                    drum3Cloned.setWidth(drum3.getWidth());
+                    drum3Cloned.setHeight(drum3.getHeight());
+                    drum3Cloned.setX(snappedXCoord - (drum3.getWidth() / 2));
+                    layoutHolder.addView(drum3Cloned);
+
+                    return true;
+
+                default:
+                    Log.i(TAG, "in default");
+                    Toast.makeText(getApplicationContext(), "buttonSelection method default case - Can't place button", Toast.LENGTH_SHORT).show();
                     return false;
-                }
-
-            case R.id.drum3:
-
-                Log.i(TAG, "button drum3");
-
-                Button drum3Cloned = new Button(this);
-                drum3Cloned.setId(R.id.drum3Cloned);
-                drum3Cloned.setText(drum3.getText());
-                drum3Cloned.setOnClickListener(this);
-                drum3Cloned.setOnLongClickListener(this);
-                drum3Cloned.setWidth(drum3.getWidth());
-                drum3Cloned.setHeight(drum3.getHeight());
-                drum3Cloned.setX(snappedXCoord - (drum3.getWidth()/2));
-                layoutHolder.addView(drum3Cloned);
-
-                return true;
-
-            default:
-                Log.i(TAG, "in default");
-                Toast.makeText(getApplicationContext(), "buttonSelection method default case - Can't place button ", Toast.LENGTH_SHORT).show();
-                return false;
+            }
+        } else {
+            Log.i(TAG, "buttonSelection method if statement - Can't place button");
+            return false;
         }
     }
 
@@ -286,11 +287,11 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
         Log.i(TAG, "x coord in dp before rounding " + dpXCoord);
 
-        dpXCoord = 40*(Math.round(dpXCoord/40));                                    //rounds off the dp to the closest increment of 40
+        dpXCoord = 40*(Math.round(dpXCoord/40));                                  //rounds off the dp to the closest increment of 40
 
-        Log.i(TAG, "x coord in dp after rounding = " + dpXCoord);                             //prints x-coordinates in dp and not px
+        Log.i(TAG, "x coord in dp after rounding = " + dpXCoord);                 //prints x-coordinates in dp and not px
 
-        dpXCoord = dpToPx((int) dpXCoord);                                                //converts back to px's
+        dpXCoord = dpToPx((int) dpXCoord);                                        //converts back to px's
         return (int) dpXCoord;
     }
 
@@ -307,47 +308,97 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     }
 
     //evaluates if the button has enough space to fit in drop zone
-    private boolean isSpaceOpen(int buttonwidth)                        //uses the width of the button for parameter calculations
+    private boolean isSpaceOpen(int buttonwidth,View layout)                        //uses the width of the button for parameter calculations and layout to determine which ribbon
     {
         int x;
-        boolean spaceOpen = true;                                       //return default of true when the if statement doesn't execute
+        boolean spaceOpen = true;                                                   //return default of true when the if statement doesn't execute
 
-        //cycles through the length of the button at this specific
-        //area where button was dropped in the array
-        for(int i = 0; dpToPx(40)*i/buttonwidth < 1; i++) {             //when dpToPx(40)*i/buttonwidth reaches a value 1 then means has gone through entire width of button
+        switch (layout.getId()) {
+            case R.id.rel1:
 
-            x = ((snappedXCoord - (buttonwidth/2))/dpToPx(40)) + i;     //formula to determine index of the array
+                //cycles through the length of the button at this specific
+                //area where button was dropped in the array
+                for(int i = 0; dpToPx(40)*i/buttonwidth < 1; i++) {                 //when dpToPx(40)*i/buttonwidth reaches a value 1 then means has gone through entire width of button
 
-            if (drumPlacement1[x] == 1) {                               //if that specific index of the array = 1 then that space is already occupied
+                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(40)) + i;     //formula to determine index of the array
 
-                spaceOpen = false;
+                    if (drumPlacement1[x] == 1) {                                   //if that specific index of the array = 1 then that space is already occupied
+
+                        Log.i(TAG, "isSpaceOpen method case rel1 - Can't place button");
+                        spaceOpen = false;
+                        break;
+                    }
+                }
                 break;
-            }
-        } return spaceOpen;                                             //return either true or false
+            case R.id.rel2:
+
+                for(int i = 0; dpToPx(40)*i/buttonwidth < 1; i++) {
+
+                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(40)) + i;
+
+                    if (drumPlacement2[x] == 1) {
+
+                        Log.i(TAG, "isSpaceOpen method case rel2 - Can't place button");
+                        spaceOpen = false;
+                        break;
+                    }
+                }
+                break;
+            default:
+
+                Log.i(TAG, "isSpaceOpen method case default");
+                break;
+        } return spaceOpen;                                                         //return either true or false
     }
 
     //renders area where button was dropped unavailable/full
-    private void occupySpace(int buttonwidth)
-    {
+    private void occupySpace(int buttonwidth,View layout) {                         //uses the width of the button for parameter calculations and layout to determine which ribbon
         int x;
         float u;
         int i = 0;
 
-        do {
-            x = ((snappedXCoord - (buttonwidth/2))/dpToPx(40)) + i;     //formula to determine index of the array
-            drumPlacement1[x] = 1;                                      //assigns a value of 1 to index to close the space
-            i++;
-            u = dpToPx(40)*i;
+        switch (layout.getId()) {
+            case R.id.rel1:
+
+                do {
+                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(40)) + i;     //formula to determine index of the array
+                    drumPlacement1[x] = 1;                                          //assigns a value of 1 to index to close the space
+                    i++;
+                    u = dpToPx(40) * i;
+                }
+                while (u / buttonwidth < 1);
+                break;
+            case R.id.rel2:
+
+                do {
+                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(40)) + i;
+                    drumPlacement2[x] = 1;
+                    i++;
+                    u = dpToPx(40) * i;
+                }
+                while (u / buttonwidth < 1);
+                break;
+            default:
+                Log.i(TAG, "occupySpace method case default");
+                break;
         }
-        while (u/buttonwidth < 1);
     }
 
     public void runLoop()
     {
-        int i;
+        {
+            int i;
 
-        for(i = 0; i < drumPlacement1.length; i++) {
-            Log.i(TAG, "drumPlacement1 [" + i + "] = " + drumPlacement1[i] );
+            for (i = 0; i < drumPlacement1.length; i++) {
+                Log.i(TAG, "drumPlacement1 [" + i + "] = " + drumPlacement1[i]);
+            }
+        }
+        {
+            int i;
+
+            for (i = 0; i < drumPlacement2.length; i++) {
+                Log.i(TAG, "drumPlacement2 [" + i + "] = " + drumPlacement2[i]);
+            }
         }
     }
 
