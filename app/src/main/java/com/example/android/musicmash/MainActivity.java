@@ -29,7 +29,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     RelativeLayout rel1, rel2;                                          //used in onDrag and onClick methods
     int snappedXCoord;                                                  //used in snap method
     int drumPlacement1[] = new int[19];                                 //used in isSpaceOpen and occupySpace methods
-    int drumPlacement2[] = new int[19];
+    int drumPlacement2[] = new int[19];                                 //used in isSpaceOpen and occupySpace methods
 
 
     @Override
@@ -75,6 +75,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     @Override
     public boolean onDrag(View receivingLayoutView, DragEvent dragEvent) {
         View draggedButtonView = (View) dragEvent.getLocalState();
+
+        Log.i(TAG, "draggedButtonView = " + draggedButtonView.getWidth());
 
         // Handles each of the expected events
         switch (dragEvent.getAction()) {
@@ -214,6 +216,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
         RelativeLayout layoutHolder = (RelativeLayout) findViewById(layout.getId());    //gets the id of layout and places it in layoutHolder
 
+        Log.i(TAG, "button drum width = " + button.getWidth());
+
         if (isSpaceOpen(button.getWidth(),layout)) {
 
             occupySpace(button.getWidth(),layout);
@@ -224,16 +228,17 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     Log.i(TAG, "button drum1");
                     // create new button so that we don't have to use removeView on the original button
 
-                    Button drum1Cloned = new Button(this);
-                    drum1Cloned.setId(R.id.drum1Cloned);          //create id in ids.xml so that new button can be referred to in onClick method
-                    drum1Cloned.setText(drum1.getText());         //getText so that buttons look identical
-                    drum1Cloned.setOnClickListener(this);         //setOnClickListener so that new button id can be sent to onClick method when tapped
-                    drum1Cloned.setOnLongClickListener(this);     //setOnLongClickListener so that new button can be dragged
-                    drum1Cloned.setWidth(drum1.getWidth());       //setWidth so that buttons look identical
-                    drum1Cloned.setHeight(drum1.getHeight());     //setHeight so that buttons look identical
+                    Button drum1Cloned = (Button)getLayoutInflater().inflate(R.layout.drumstyle1, null);
+                    drum1Cloned.setId(R.id.drum1Cloned);            //create id in ids.xml so that new button can be referred to in onClick method
+                    //drum1Cloned.setText(drum1.getText());           //getText so that buttons look identical
+                    drum1Cloned.setOnClickListener(this);           //setOnClickListener so that new button id can be sent to onClick method when tapped
+                    drum1Cloned.setOnLongClickListener(this);       //setOnLongClickListener so that new button can be dragged
+                    //drum1Cloned.setWidth(drum1.getWidth());         //setWidth so that buttons look identical
+                    //drum1Cloned.setHeight(drum1.getHeight());       //setHeight so that buttons look identical
                     drum1Cloned.setX(snappedXCoord - (drum1.getWidth() / 2));   //positions button where dropped ( width /2 , because x-coord of drop is
                                                                                 // where finger was released and x-coord of button is at the left side of button)
-                    layoutHolder.addView(drum1Cloned);            //add the new drum1Cloned button to layout
+                    Log.i(TAG, "button drum1 width = " + drum1.getWidth());
+                    layoutHolder.addView(drum1Cloned);              //add the new drum1Cloned button to layout
 
                     return true;
 
