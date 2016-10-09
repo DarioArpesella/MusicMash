@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.DragEvent;
 import android.view.View;
 import android.view.View.OnDragListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.view.View.OnClickListener;
 import android.widget.RelativeLayout;
@@ -85,8 +86,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 Log.i(TAG, "drag action started");
 
                 // Determines if this View can accept the dragged data
-                if (dragEvent.getClipDescription()
-                        .hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
+                if (dragEvent.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
                     Log.i(TAG, "Can accept this data");
 
                     // returns true to indicate that the View can accept the dragged data.
@@ -123,6 +123,25 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 the action only sent here if ACTION_DRAG_STARTED returned true
                 return true if successfully handled the drop else false*/
 
+                int parentId = ((View) draggedButtonView.getParent()).getId();
+                ViewGroup draggedImageViewParentLayout = (ViewGroup) draggedButtonView.getParent();
+
+                switch (parentId) {
+
+                    case R.id.rel1:
+                        Log.i(TAG, "the parent view of this button is rel1");
+                        draggedImageViewParentLayout.removeView(draggedButtonView);
+                        return true;
+
+                    case R.id.rel2:
+                        Log.i(TAG, "the parent view of this button is rel2");
+                        draggedImageViewParentLayout.removeView(draggedButtonView);
+                        return true;
+
+                    default:
+                        Log.i(TAG, "default case in ACTION_DRAG_STARTED switch");
+                        break;
+                }
 
                 //dragEvent.getX() gets the x coordinate of where button was dropped.
                 // Coordinates then get sent to the snap method
@@ -139,6 +158,10 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
                         buttonSelection(draggedButtonView, receivingLayoutView);
                         return true;
+
+                    default:
+                        Log.i(TAG, "default case in ACTION_DROP switch");
+                        break;
 
                 }
 
@@ -230,7 +253,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
                     //Button drum1Cloned = (Button)getLayoutInflater().inflate(R.layout.drumstyle1, null);
                     Button drum1Cloned = new Button(this);
-                    drum1Cloned.setId(R.id.drum1Cloned);                        //create id in ids.xml so that new button can be referred to in onClick method
+                    drum1Cloned.setId(R.id.drum1);                        //create id in ids.xml so that new button can be referred to in onClick method
                     drum1Cloned.setText(drum1.getText());                       //getText so that buttons look identical
                     drum1Cloned.setOnClickListener(this);                       //setOnClickListener so that new button id can be sent to onClick method when tapped
                     drum1Cloned.setOnLongClickListener(this);                   //setOnLongClickListener so that new button can be dragged
