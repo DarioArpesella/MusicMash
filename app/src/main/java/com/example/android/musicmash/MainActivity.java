@@ -25,7 +25,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     private static final String TAG = "MainActivityJunk";
     MediaPlayer singleSoundByte;                                        //used in playSingleSoundByte method
     int singleSoundByteID;                                              //used in onClick and playSingleSoundByte methods
-    static Button drum1, drum2, drum3;                                  //used in onDrag and onClick methods
+    static Button drum1,drum2, drum3;                                   //used in onDrag and onClick methods
     RelativeLayout rel1, rel2;                                          //used in onDrag and onClick methods
     int snappedXCoord;                                                  //used in snap method
     int drumPlacement1[] = new int[19];                                 //used in isSpaceOpen and occupySpace methods
@@ -228,17 +228,20 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     Log.i(TAG, "button drum1");
                     // create new button so that we don't have to use removeView on the original button
 
-                    Button drum1Cloned = (Button)getLayoutInflater().inflate(R.layout.drumstyle1, null);
-                    drum1Cloned.setId(R.id.drum1Cloned);            //create id in ids.xml so that new button can be referred to in onClick method
-                    //drum1Cloned.setText(drum1.getText());           //getText so that buttons look identical
-                    drum1Cloned.setOnClickListener(this);           //setOnClickListener so that new button id can be sent to onClick method when tapped
-                    drum1Cloned.setOnLongClickListener(this);       //setOnLongClickListener so that new button can be dragged
-                    //drum1Cloned.setWidth(drum1.getWidth());         //setWidth so that buttons look identical
-                    //drum1Cloned.setHeight(drum1.getHeight());       //setHeight so that buttons look identical
+                    //Button drum1Cloned = (Button)getLayoutInflater().inflate(R.layout.drumstyle1, null);
+                    Button drum1Cloned = new Button(this);
+                    drum1Cloned.setId(R.id.drum1Cloned);                        //create id in ids.xml so that new button can be referred to in onClick method
+                    drum1Cloned.setText(drum1.getText());                       //getText so that buttons look identical
+                    drum1Cloned.setOnClickListener(this);                       //setOnClickListener so that new button id can be sent to onClick method when tapped
+                    drum1Cloned.setOnLongClickListener(this);                   //setOnLongClickListener so that new button can be dragged
+                    drum1Cloned.setWidth(drum1.getWidth());                     //setWidth so that buttons look identical
+                    drum1Cloned.setHeight(drum1.getHeight());                   //setHeight so that buttons look identical
+                    drum1Cloned.setBackgroundResource(R.drawable.drums);        //setBackgroundResource so that drum buttons look identical
+                    drum1Cloned.setMinimumWidth(1);                             //setMinimumWidth to override default so that buttons appear correctly
+                    drum1Cloned.setMinimumHeight(1);                            //setMinimumHeight to override default so that buttons appear correctly
                     drum1Cloned.setX(snappedXCoord - (drum1.getWidth() / 2));   //positions button where dropped ( width /2 , because x-coord of drop is
                                                                                 // where finger was released and x-coord of button is at the left side of button)
-                    Log.i(TAG, "button drum1 width = " + drum1.getWidth());
-                    layoutHolder.addView(drum1Cloned);              //add the new drum1Cloned button to layout
+                    layoutHolder.addView(drum1Cloned);                          //add the new drum1Cloned button to layout
 
                     return true;
 
@@ -253,9 +256,11 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     drum2Cloned.setOnLongClickListener(this);
                     drum2Cloned.setWidth(drum2.getWidth());
                     drum2Cloned.setHeight(drum2.getHeight());
+                    drum2Cloned.setBackgroundResource(R.drawable.drums);
+                    drum2Cloned.setMinimumWidth(1);
+                    drum2Cloned.setMinimumHeight(1);
                     drum2Cloned.setX(snappedXCoord - (drum2.getWidth() / 2));
                     layoutHolder.addView(drum2Cloned);
-
                     return true;
 
                 case R.id.drum3:
@@ -269,6 +274,9 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     drum3Cloned.setOnLongClickListener(this);
                     drum3Cloned.setWidth(drum3.getWidth());
                     drum3Cloned.setHeight(drum3.getHeight());
+                    drum3Cloned.setBackgroundResource(R.drawable.drums);
+                    drum3Cloned.setMinimumWidth(1);
+                    drum3Cloned.setMinimumHeight(1);
                     drum3Cloned.setX(snappedXCoord - (drum3.getWidth() / 2));
                     layoutHolder.addView(drum3Cloned);
 
@@ -357,7 +365,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     }
 
     //renders area where button was dropped unavailable/full
-    private void occupySpace(int buttonwidth,View layout) {                         //uses the width of the button for parameter calculations and layout to determine which ribbon
+    private void occupySpace(int buttonWidth,View layout) {                         //uses the width of the button for parameter calculations and layout to determine which ribbon
         int x;
         float u;
         int i = 0;
@@ -366,22 +374,22 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
             case R.id.rel1:
 
                 do {
-                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(40)) + i;     //formula to determine index of the array
+                    x = ((snappedXCoord - (buttonWidth / 2)) / dpToPx(40)) + i;     //formula to determine index of the array
                     drumPlacement1[x] = 1;                                          //assigns a value of 1 to index to close the space
                     i++;
                     u = dpToPx(40) * i;
                 }
-                while (u / buttonwidth < 1);
+                while (u / buttonWidth < 1);
                 break;
             case R.id.rel2:
 
                 do {
-                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(40)) + i;
+                    x = ((snappedXCoord - (buttonWidth / 2)) / dpToPx(40)) + i;
                     drumPlacement2[x] = 1;
                     i++;
                     u = dpToPx(40) * i;
                 }
-                while (u / buttonwidth < 1);
+                while (u / buttonWidth < 1);
                 break;
             default:
                 Log.i(TAG, "occupySpace method case default");
@@ -389,7 +397,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         }
     }
 
-    public void runLoop()
+    public void runLoop()   //used to show array index values
     {
         {
             int i;
