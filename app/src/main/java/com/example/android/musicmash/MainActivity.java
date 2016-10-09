@@ -123,41 +123,48 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 the action only sent here if ACTION_DRAG_STARTED returned true
                 return true if successfully handled the drop else false*/
 
-                int parentId = ((View) draggedButtonView.getParent()).getId();
-                ViewGroup draggedImageViewParentLayout = (ViewGroup) draggedButtonView.getParent();
-
-                switch (parentId) {
-
-                    case R.id.rel1:
-                        Log.i(TAG, "the parent view of this button is rel1");
-                        draggedImageViewParentLayout.removeView(draggedButtonView);
-                        return true;
-
-                    case R.id.rel2:
-                        Log.i(TAG, "the parent view of this button is rel2");
-                        draggedImageViewParentLayout.removeView(draggedButtonView);
-                        return true;
-
-                    default:
-                        Log.i(TAG, "default case in ACTION_DRAG_STARTED switch");
-                        break;
-                }
-
                 //dragEvent.getX() gets the x coordinate of where button was dropped.
                 // Coordinates then get sent to the snap method
                 snappedXCoord = snap((int)dragEvent.getX());
+
+                if (isSpaceOpen(draggedButtonView.getWidth(),receivingLayoutView)) {
+
+
+                    int parentId = ((View) draggedButtonView.getParent()).getId();
+                    ViewGroup draggedImageViewParentLayout = (ViewGroup) draggedButtonView.getParent();
+
+                    switch (parentId) {
+
+                        case R.id.rel1:
+                            Log.i(TAG, "the parent view of this button is rel1");
+                            draggedImageViewParentLayout.removeView(draggedButtonView);
+                            break;
+
+                        case R.id.rel2:
+                            Log.i(TAG, "the parent view of this button is rel2");
+                            draggedImageViewParentLayout.removeView(draggedButtonView);
+                            break;
+
+                        default:
+                            Log.i(TAG, "default case in ACTION_DRAG_STARTED switch");
+                            break;
+                    }
+                } else {
+                    Log.i(TAG, "ACTION_DROP else of the if statement - space is not open");
+
+                }
 
                 //Looks at id of view button was dropped in and adds that button clone in said view (relative layout)
                 switch (receivingLayoutView.getId()) {
                     case R.id.rel1:
 
                         buttonSelection(draggedButtonView, receivingLayoutView);    //sends button and layout into buttonSelection method
-                        return true;
+                        break;
 
                     case R.id.rel2:
 
                         buttonSelection(draggedButtonView, receivingLayoutView);
-                        return true;
+                        break;
 
                     default:
                         Log.i(TAG, "default case in ACTION_DROP switch");
@@ -273,7 +280,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     Log.i(TAG, "button drum2");
 
                     Button drum2Cloned = new Button(this);
-                    drum2Cloned.setId(R.id.drum2Cloned);
+                    drum2Cloned.setId(R.id.drum2);
                     drum2Cloned.setText(drum2.getText());
                     drum2Cloned.setOnClickListener(this);
                     drum2Cloned.setOnLongClickListener(this);
@@ -291,7 +298,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     Log.i(TAG, "button drum3");
 
                     Button drum3Cloned = new Button(this);
-                    drum3Cloned.setId(R.id.drum3Cloned);
+                    drum3Cloned.setId(R.id.drum3);
                     drum3Cloned.setText(drum3.getText());
                     drum3Cloned.setOnClickListener(this);
                     drum3Cloned.setOnLongClickListener(this);
@@ -344,7 +351,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     }
 
     //evaluates if the button has enough space to fit in drop zone
-    private boolean isSpaceOpen(int buttonwidth,View layout)                        //uses the width of the button for parameter calculations and layout to determine which ribbon
+    private boolean isSpaceOpen(int buttonwidth,View layout)                        //uses the width of the button for parameter calculations and layout to determine which ribbon the button resides in
     {
         int x;
         boolean spaceOpen = true;                                                   //return default of true when the if statement doesn't execute
