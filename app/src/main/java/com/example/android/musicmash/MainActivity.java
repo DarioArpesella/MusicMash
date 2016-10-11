@@ -24,13 +24,14 @@ my first app so please don't judge too hard
 public class MainActivity extends Activity implements OnDragListener, View.OnLongClickListener, OnClickListener {
 
     private static final String TAG = "MainActivityJunk";
-    MediaPlayer singleSoundByte;                                        //used in playSingleSoundByte method
+    MediaPlayer singleSoundByte;                                        //used in onClick and playSingleSoundByte method
     int singleSoundByteID;                                              //used in onClick and playSingleSoundByte methods
-    static Button drum1,drum2, drum3;                                   //used in onDrag and onClick methods
-    RelativeLayout rel1, rel2;                                          //used in onDrag and onClick methods
-    int snappedXCoord;                                                  //used in snap method
-    int drumPlacement1[] = new int[19];                                 //used in isSpaceOpen and occupySpace methods
-    int drumPlacement2[] = new int[19];                                 //used in isSpaceOpen and occupySpace methods
+    static Button drum1,drum2, drum3;                                   //used in onClick and buttonSelection methods
+    RelativeLayout rel1, rel2;                                          //used in onDrag, isSpaceOpen, occupySpace, openSpace methods
+    int snappedXCoord;                                                  //used in onDrag, buttonSelection, isSpaceOpen, occupySpace methods
+    int initialXCoord;                                                  //used in onLongClick and openSpace methods
+    int drumPlacement1[] = new int[19];                                 //used in isSpaceOpen, occupySpace and openSpace methods
+    int drumPlacement2[] = new int[19];                                 //used in isSpaceOpen, occupySpace and openSpace methods
 
 
     @Override
@@ -63,6 +64,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         //the button has been touched
         //create clip data holding data of the type MIMETYPE_TEXT_PLAIN
         ClipData clipData = ClipData.newPlainText("", "");
+
+        initialXCoord = snap((int)imageView.getX());    //used to capture x-coords before onDrag begins
 
         View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(imageView);
         //start the drag - contains the data to be dragged,
@@ -124,20 +127,24 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 return true if successfully handled the drop else false*/
 
                 //dragEvent.getX() gets the x coordinate of where button was dropped.
-                // Coordinates then get sent to the snap method
+                //Coordinates then get sent to the snap method
                 snappedXCoord = snap((int)dragEvent.getX());
 
+                //used to hold the parent layout of the button being dragged so that it can be sent to openSpace method
+                //and can to also remove button which was dragged in one of the ribbons
+                ViewGroup draggedImageViewParentLayout = (ViewGroup) draggedButtonView.getParent();
+
+                //call openSpace method to ensure the dragged button in the ribbons' space has been freed as to allow the next button to be placed
+                openSpace(draggedButtonView.getWidth(),draggedImageViewParentLayout);
+
+                //will run only if the area where button is to be placed is not occupied
                 if (isSpaceOpen(draggedButtonView.getWidth(),receivingLayoutView)) {
 
-
-                    int parentId = ((View) draggedButtonView.getParent()).getId();
-                    ViewGroup draggedImageViewParentLayout = (ViewGroup) draggedButtonView.getParent();
-
-                    switch (parentId) {
+                    switch (draggedImageViewParentLayout.getId()) {
 
                         case R.id.rel1:
                             Log.i(TAG, "the parent view of this button is rel1");
-                            draggedImageViewParentLayout.removeView(draggedButtonView);
+                            draggedImageViewParentLayout.removeView(draggedButtonView);         //remove button from parent view
                             break;
 
                         case R.id.rel2:
@@ -196,23 +203,11 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 singleSoundByteID = R.raw.drum1;    //give button sound byte id to be used in playSingleSoundByte method
                 playSingleSoundByte();
                 break;
-            case R.id.drum1Cloned:                  //cloned button must play the same sound byte
-                singleSoundByteID = R.raw.drum1;
-                playSingleSoundByte();
-                break;
             case R.id.drum2:
                 singleSoundByteID = R.raw.drum2;
                 playSingleSoundByte();
                 break;
-            case R.id.drum2Cloned:
-                singleSoundByteID = R.raw.drum2;
-                playSingleSoundByte();
-                break;
             case R.id.drum3:
-                singleSoundByteID = R.raw.drum3;
-                playSingleSoundByte();
-                break;
-            case R.id.drum3Cloned:
                 singleSoundByteID = R.raw.drum3;
                 playSingleSoundByte();
                 break;
@@ -260,7 +255,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
                     //Button drum1Cloned = (Button)getLayoutInflater().inflate(R.layout.drumstyle1, null);
                     Button drum1Cloned = new Button(this);
-                    drum1Cloned.setId(R.id.drum1);                        //create id in ids.xml so that new button can be referred to in onClick method
+                    drum1Cloned.setId(R.id.drum1);                              //create id in ids.xml so that new button can be referred to in onClick method
                     drum1Cloned.setText(drum1.getText());                       //getText so that buttons look identical
                     drum1Cloned.setOnClickListener(this);                       //setOnClickListener so that new button id can be sent to onClick method when tapped
                     drum1Cloned.setOnLongClickListener(this);                   //setOnLongClickListener so that new button can be dragged
@@ -423,6 +418,39 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 break;
             default:
                 Log.i(TAG, "occupySpace method case default");
+                break;
+        }
+    }
+
+    //renders area where button was dropped available/open
+    private void openSpace(int buttonWidth,View layout) {                         //uses the width of the button for parameter calculations and layout to determine which ribbon
+        int x;
+        float u;
+        int i = 0;
+
+        switch (layout.getId()) {
+            case R.id.rel1:
+
+                do {
+                    x = (initialXCoord / dpToPx(40)) + i;                           //formula to determine index of the array
+                    drumPlacement1[x] = 0;                                          //assigns a value of 0 to index to open the space
+                    i++;
+                    u = dpToPx(40) * i;
+                }
+                while (u / buttonWidth < 1);
+                break;
+            case R.id.rel2:
+
+                do {
+                    x = (initialXCoord  / dpToPx(40)) + i;
+                    drumPlacement2[x] = 0;
+                    i++;
+                    u = dpToPx(40) * i;
+                }
+                while (u / buttonWidth < 1);
+                break;
+            default:
+                Log.i(TAG, "openSpace method case default");
                 break;
         }
     }
