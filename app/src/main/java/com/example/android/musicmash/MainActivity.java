@@ -13,6 +13,7 @@ import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -28,6 +29,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     int singleSoundByteID;                                              //used in onClick and playSingleSoundByte methods
     static Button drum1,drum2, drum3;                                   //used in onClick and buttonSelection methods
     RelativeLayout rel1, rel2;                                          //used in onDrag, isSpaceOpen, occupySpace, openSpace methods
+    LinearLayout bottom_lin_container;                                  //used to setOnDragListener as to allow deleting of buttons
+    Button delete;                                                      //used to setOnDragListener as to allow deleting of buttons
     int snappedXCoord;                                                  //used in onDrag, buttonSelection, isSpaceOpen, occupySpace methods
     int initialXCoord;                                                  //used in onLongClick and openSpace methods
     int drumPlacement1[] = new int[19];                                 //used in isSpaceOpen, occupySpace and openSpace methods
@@ -45,10 +48,13 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         drum1 = (Button) findViewById(R.id.drum1);
         drum2 = (Button) findViewById(R.id.drum2);
         drum3 = (Button) findViewById(R.id.drum3);
+        delete = (Button) findViewById(R.id.delete);
+
 
         //link each layout to its respective xml id
         rel1 = (RelativeLayout) findViewById(R.id.rel1);
         rel2 = (RelativeLayout) findViewById(R.id.rel2);
+        bottom_lin_container = (LinearLayout) findViewById(R.id.bottom_lin_container);
 
         //register a long click listener for the buttons
         drum1.setOnLongClickListener(this);
@@ -58,6 +64,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         //register drag event listeners for the target layout containers
         rel1.setOnDragListener(this);
         rel2.setOnDragListener(this);
+        bottom_lin_container.setOnDragListener(this);
+        delete.setOnDragListener(this);
     }
 
     //called when button has been touched and held
@@ -156,11 +164,13 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                                 break;
 
                             default:
-                                Log.i(TAG, "default case in ACTION_DRAG_STARTED switch");
+                                Log.i(TAG, "default case in ACTION_DROP switch - parent view wasn't rel1 or rel2 so don't delete any buttons");
                                 break;
                         }
+
                     } else {
                         Log.i(TAG, "ACTION_DROP else of the if statement - space is not open");
+                        return false;
                     }
 
                     //Looks at id of view button was dropped in and adds that button clone in said view (relative layout)
@@ -387,7 +397,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 break;
             default:
 
-                Log.i(TAG, "isSpaceOpen method case default");
+                Log.i(TAG, "isSpaceOpen method case default - parent view wasn't rel1 or rel2");
                 break;
         } return spaceOpen;                                                         //return either true or false
     }
