@@ -32,6 +32,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     int initialXCoord;                                                  //used in onLongClick and openSpace methods
     int drumPlacement1[] = new int[19];                                 //used in isSpaceOpen, occupySpace and openSpace methods
     int drumPlacement2[] = new int[19];                                 //used in isSpaceOpen, occupySpace and openSpace methods
+    int ribbonLengthInDP = 720;                                         //used in onDrag method
+    int minTileLengthInDP = 40;
 
 
     @Override
@@ -97,7 +99,6 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
                 } else {
                     Log.i(TAG, "Can not accept this data");
-
                 }
 
                 // Returns false. During the current drag and drop operation, this View will
@@ -130,53 +131,57 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 //Coordinates then get sent to the snap method
                 snappedXCoord = snap((int)dragEvent.getX());
 
-                //used to hold the parent layout of the button being dragged so that it can be sent to openSpace method
-                //and can to also remove button which was dragged in one of the ribbons
-                ViewGroup draggedImageViewParentLayout = (ViewGroup) draggedButtonView.getParent();
+                if ((snappedXCoord - (draggedButtonView.getWidth() / 2)) >= 0 && (snappedXCoord + (draggedButtonView.getWidth() / 2)) <= dpToPx(ribbonLengthInDP)) {
 
-                //call openSpace method to ensure the dragged button in the ribbons' space has been freed as to allow the next button to be placed
-                openSpace(draggedButtonView.getWidth(),draggedImageViewParentLayout);
+                    //used to hold the parent layout of the button being dragged so that it can be sent to openSpace method
+                    //and can to also remove button which was dragged in one of the ribbons
+                    ViewGroup draggedImageViewParentLayout = (ViewGroup) draggedButtonView.getParent();
 
-                //will run only if the area where button is to be placed is not occupied
-                if (isSpaceOpen(draggedButtonView.getWidth(),receivingLayoutView)) {
+                    //call openSpace method to ensure the dragged button in the ribbons' space has been freed as to allow the next button to be placed
+                    openSpace(draggedButtonView.getWidth(), draggedImageViewParentLayout);
 
-                    switch (draggedImageViewParentLayout.getId()) {
+                    //will run only if the area where button is to be placed is not occupied
+                    if (isSpaceOpen(draggedButtonView.getWidth(), receivingLayoutView)) {
 
+                        switch (draggedImageViewParentLayout.getId()) {
+
+                            case R.id.rel1:
+                                Log.i(TAG, "the parent view of this button is rel1");
+                                draggedImageViewParentLayout.removeView(draggedButtonView);         //remove button from parent view
+                                break;
+
+                            case R.id.rel2:
+                                Log.i(TAG, "the parent view of this button is rel2");
+                                draggedImageViewParentLayout.removeView(draggedButtonView);
+                                break;
+
+                            default:
+                                Log.i(TAG, "default case in ACTION_DRAG_STARTED switch");
+                                break;
+                        }
+                    } else {
+                        Log.i(TAG, "ACTION_DROP else of the if statement - space is not open");
+                    }
+
+                    //Looks at id of view button was dropped in and adds that button clone in said view (relative layout)
+                    switch (receivingLayoutView.getId()) {
                         case R.id.rel1:
-                            Log.i(TAG, "the parent view of this button is rel1");
-                            draggedImageViewParentLayout.removeView(draggedButtonView);         //remove button from parent view
+
+                            buttonSelection(draggedButtonView, receivingLayoutView);    //sends button and layout into buttonSelection method
                             break;
 
                         case R.id.rel2:
-                            Log.i(TAG, "the parent view of this button is rel2");
-                            draggedImageViewParentLayout.removeView(draggedButtonView);
+
+                            buttonSelection(draggedButtonView, receivingLayoutView);
                             break;
 
                         default:
-                            Log.i(TAG, "default case in ACTION_DRAG_STARTED switch");
+                            Log.i(TAG, "default case in ACTION_DROP switch");
                             break;
                     }
                 } else {
-                    Log.i(TAG, "ACTION_DROP else of the if statement - space is not open");
-
-                }
-
-                //Looks at id of view button was dropped in and adds that button clone in said view (relative layout)
-                switch (receivingLayoutView.getId()) {
-                    case R.id.rel1:
-
-                        buttonSelection(draggedButtonView, receivingLayoutView);    //sends button and layout into buttonSelection method
-                        break;
-
-                    case R.id.rel2:
-
-                        buttonSelection(draggedButtonView, receivingLayoutView);
-                        break;
-
-                    default:
-                        Log.i(TAG, "default case in ACTION_DROP switch");
-                        break;
-
+                    Toast.makeText(getApplicationContext(), "ACTION_DROP else statement - Can't drop out of bounding area", Toast.LENGTH_SHORT).show();
+                    return false;
                 }
 
             case DragEvent.ACTION_DRAG_ENDED:
@@ -253,7 +258,6 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     Log.i(TAG, "button drum1");
                     // create new button so that we don't have to use removeView on the original button
 
-                    //Button drum1Cloned = (Button)getLayoutInflater().inflate(R.layout.drumstyle1, null);
                     Button drum1Cloned = new Button(this);
                     drum1Cloned.setId(R.id.drum1);                              //create id in ids.xml so that new button can be referred to in onClick method
                     drum1Cloned.setText(drum1.getText());                       //getText so that buttons look identical
@@ -264,8 +268,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     drum1Cloned.setBackgroundResource(R.drawable.drums);        //setBackgroundResource so that drum buttons look identical
                     drum1Cloned.setMinimumWidth(1);                             //setMinimumWidth to override default so that buttons appear correctly
                     drum1Cloned.setMinimumHeight(1);                            //setMinimumHeight to override default so that buttons appear correctly
-                    drum1Cloned.setX(snappedXCoord - (drum1.getWidth() / 2));   //positions button where dropped ( width /2 , because x-coord of drop is
-                                                                                // where finger was released and x-coord of button is at the left side of button)
+                    drum1Cloned.setX(snappedXCoord - (drum1.getWidth() / 2));   //positions button where dropped ( width /2 , because x-coord of drop is where finger was released and x-coord of button is at the left side of button)
                     layoutHolder.addView(drum1Cloned);                          //add the new drum1Cloned button to layout
 
                     return true;
@@ -321,11 +324,11 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     //gives the button which was dropped a "snap" function of 40dp increments
     private int snap(int px)
     {
-        float dpXCoord = pxToDp(px);  //takes the x-coordinates in pixels and converts to dp
+        float dpXCoord = pxToDp(px);                                              //takes the x-coordinates in pixels and converts to dp
 
-        Log.i(TAG, "x coord in dp before rounding " + dpXCoord);
+        Log.i(TAG, "x coord in dp before rounding = " + dpXCoord);
 
-        dpXCoord = 40*(Math.round(dpXCoord/40));                                  //rounds off the dp to the closest increment of 40
+        dpXCoord = minTileLengthInDP*(Math.round(dpXCoord/minTileLengthInDP));    //rounds off the dp to the closest increment of 40
 
         Log.i(TAG, "x coord in dp after rounding = " + dpXCoord);                 //prints x-coordinates in dp and not px
 
@@ -356,11 +359,11 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
                 //cycles through the length of the button at this specific
                 //area where button was dropped in the array
-                for(int i = 0; dpToPx(40)*i/buttonwidth < 1; i++) {                 //when dpToPx(40)*i/buttonwidth reaches a value 1 then means has gone through entire width of button
+                for(int i = 0; dpToPx(minTileLengthInDP)*i/buttonwidth < 1; i++) {                 //when dpToPx(minTileLengthInDP)*i/buttonwidth reaches a value 1 then means has gone through entire width of button
 
-                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(40)) + i;     //formula to determine index of the array
+                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(minTileLengthInDP)) + i;     //formula to determine index of the array
 
-                    if (drumPlacement1[x] == 1) {                                   //if that specific index of the array = 1 then that space is already occupied
+                    if (drumPlacement1[x] == 1) {                                                  //if that specific index of the array = 1 then that space is already occupied
 
                         Log.i(TAG, "isSpaceOpen method case rel1 - Can't place button");
                         spaceOpen = false;
@@ -370,9 +373,9 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 break;
             case R.id.rel2:
 
-                for(int i = 0; dpToPx(40)*i/buttonwidth < 1; i++) {
+                for(int i = 0; dpToPx(minTileLengthInDP)*i/buttonwidth < 1; i++) {
 
-                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(40)) + i;
+                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(minTileLengthInDP)) + i;
 
                     if (drumPlacement2[x] == 1) {
 
@@ -399,20 +402,20 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
             case R.id.rel1:
 
                 do {
-                    x = ((snappedXCoord - (buttonWidth / 2)) / dpToPx(40)) + i;     //formula to determine index of the array
-                    drumPlacement1[x] = 1;                                          //assigns a value of 1 to index to close the space
+                    x = ((snappedXCoord - (buttonWidth / 2)) / dpToPx(minTileLengthInDP)) + i;     //formula to determine index of the array
+                    drumPlacement1[x] = 1;                                                         //assigns a value of 1 to index to close the space
                     i++;
-                    u = dpToPx(40) * i;
+                    u = dpToPx(minTileLengthInDP) * i;
                 }
                 while (u / buttonWidth < 1);
                 break;
             case R.id.rel2:
 
                 do {
-                    x = ((snappedXCoord - (buttonWidth / 2)) / dpToPx(40)) + i;
+                    x = ((snappedXCoord - (buttonWidth / 2)) / dpToPx(minTileLengthInDP)) + i;
                     drumPlacement2[x] = 1;
                     i++;
-                    u = dpToPx(40) * i;
+                    u = dpToPx(minTileLengthInDP) * i;
                 }
                 while (u / buttonWidth < 1);
                 break;
@@ -432,20 +435,20 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
             case R.id.rel1:
 
                 do {
-                    x = (initialXCoord / dpToPx(40)) + i;                           //formula to determine index of the array
+                    x = (initialXCoord / dpToPx(minTileLengthInDP)) + i;            //formula to determine index of the array
                     drumPlacement1[x] = 0;                                          //assigns a value of 0 to index to open the space
                     i++;
-                    u = dpToPx(40) * i;
+                    u = dpToPx(minTileLengthInDP) * i;
                 }
                 while (u / buttonWidth < 1);
                 break;
             case R.id.rel2:
 
                 do {
-                    x = (initialXCoord  / dpToPx(40)) + i;
+                    x = (initialXCoord  / dpToPx(minTileLengthInDP)) + i;
                     drumPlacement2[x] = 0;
                     i++;
-                    u = dpToPx(40) * i;
+                    u = dpToPx(minTileLengthInDP) * i;
                 }
                 while (u / buttonWidth < 1);
                 break;
@@ -487,20 +490,18 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         float j = 60;
         float k = 61;
 
-        Log.i(TAG, "Math.round : " + a + " = " +  40*(Math.round(a/40)) );
-        Log.i(TAG, "Math.round : " + b + " = " +  40*(Math.round(b/40)) );
-        Log.i(TAG, "Math.round : " + c + " = " +  40*(Math.round(c/40)) );
-        Log.i(TAG, "Math.round : " + d + " = " +  40*(Math.round(d/40)) );
-        Log.i(TAG, "Math.round : " + e + " = " +  40*(Math.round(e/40)) );
-        Log.i(TAG, "Math.round : " + f + " = " +  40*(Math.round(f/40)) );
-        Log.i(TAG, "Math.round : " + g + " = " +  40*(Math.round(g/40)) );
-        Log.i(TAG, "Math.round : " + h + " = " +  40*(Math.round(h/40)) );
-        Log.i(TAG, "Math.round : " + i + " = " +  40*(Math.round(i/40)) );
-        Log.i(TAG, "Math.round : " + j + " = " +  40*(Math.round(j/40)) );
-        Log.i(TAG, "Math.round : " + k + " = " +  40*(Math.round(k/40)) );
+        Log.i(TAG, "Math.round : " + a + " = " +  minTileLengthInDP*(Math.round(a/minTileLengthInDP)) );
+        Log.i(TAG, "Math.round : " + b + " = " +  minTileLengthInDP*(Math.round(b/minTileLengthInDP)) );
+        Log.i(TAG, "Math.round : " + c + " = " +  minTileLengthInDP*(Math.round(c/minTileLengthInDP)) );
+        Log.i(TAG, "Math.round : " + d + " = " +  minTileLengthInDP*(Math.round(d/minTileLengthInDP)) );
+        Log.i(TAG, "Math.round : " + e + " = " +  minTileLengthInDP*(Math.round(e/minTileLengthInDP)) );
+        Log.i(TAG, "Math.round : " + f + " = " +  minTileLengthInDP*(Math.round(f/minTileLengthInDP)) );
+        Log.i(TAG, "Math.round : " + g + " = " +  minTileLengthInDP*(Math.round(g/minTileLengthInDP)) );
+        Log.i(TAG, "Math.round : " + h + " = " +  minTileLengthInDP*(Math.round(h/minTileLengthInDP)) );
+        Log.i(TAG, "Math.round : " + i + " = " +  minTileLengthInDP*(Math.round(i/minTileLengthInDP)) );
+        Log.i(TAG, "Math.round : " + j + " = " +  minTileLengthInDP*(Math.round(j/minTileLengthInDP)) );
+        Log.i(TAG, "Math.round : " + k + " = " +  minTileLengthInDP*(Math.round(k/minTileLengthInDP)) );
     }
-
-
 }
 
 
