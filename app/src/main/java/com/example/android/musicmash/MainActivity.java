@@ -13,6 +13,7 @@ import android.view.View.OnDragListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.view.View.OnClickListener;
+import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
@@ -30,12 +31,13 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     static Button drum1,drum2, drum3;                                   //used in onClick and buttonSelection methods
     RelativeLayout rel1, rel2;                                          //used in onDrag, isSpaceOpen, occupySpace, openSpace methods
     LinearLayout bottom_lin_container;                                  //used to setOnDragListener as to allow deleting of buttons
+    HorizontalScrollView bottom_hor_container;
     Button delete;                                                      //used to setOnDragListener as to allow deleting of buttons
     int snappedXCoord;                                                  //used in onDrag, buttonSelection, isSpaceOpen, occupySpace methods
     int initialXCoord;                                                  //used in onLongClick and openSpace methods
-    int drumPlacement1[] = new int[19];                                 //used in isSpaceOpen, occupySpace and openSpace methods
-    int drumPlacement2[] = new int[19];                                 //used in isSpaceOpen, occupySpace and openSpace methods
-    int ribbonLengthInDP = 720;                                         //used in onDrag method
+    int drumPlacement1[] = new int[30];                                 //used in isSpaceOpen, occupySpace and openSpace methods
+    int drumPlacement2[] = new int[30];                                 //used in isSpaceOpen, occupySpace and openSpace methods
+    int ribbonLengthInDP = 1200;                                        //used in onDrag method
     int minTileLengthInDP = 40;
 
 
@@ -55,6 +57,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         rel1 = (RelativeLayout) findViewById(R.id.rel1);
         rel2 = (RelativeLayout) findViewById(R.id.rel2);
         bottom_lin_container = (LinearLayout) findViewById(R.id.bottom_lin_container);
+        bottom_hor_container = (HorizontalScrollView) findViewById(R.id.bottom_hor_container);
 
         //register a long click listener for the buttons
         drum1.setOnLongClickListener(this);
@@ -65,6 +68,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         rel1.setOnDragListener(this);
         rel2.setOnDragListener(this);
         bottom_lin_container.setOnDragListener(this);
+        bottom_hor_container.setOnDragListener(this);
         delete.setOnDragListener(this);
     }
 
@@ -139,10 +143,11 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 //Coordinates then get sent to the snap method
                 snappedXCoord = snap((int)dragEvent.getX());
 
+                //used to set "bounding area" of where one can drop the button
                 if ((snappedXCoord - (draggedButtonView.getWidth() / 2)) >= 0 && (snappedXCoord + (draggedButtonView.getWidth() / 2)) <= dpToPx(ribbonLengthInDP)) {
 
                     //used to hold the parent layout of the button being dragged so that it can be sent to openSpace method
-                    //and can to also remove button which was dragged in one of the ribbons
+                    //and to also remove button which was dragged in one of the ribbons
                     ViewGroup draggedImageViewParentLayout = (ViewGroup) draggedButtonView.getParent();
 
                     //call openSpace method to ensure the dragged button in the ribbons' space has been freed as to allow the next button to be placed
@@ -378,6 +383,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                         Log.i(TAG, "isSpaceOpen method case rel1 - Can't place button");
                         spaceOpen = false;
                         break;
+                    } else {
+                        Log.i(TAG, "isSpaceOpen method returning true");
                     }
                 }
                 break;
