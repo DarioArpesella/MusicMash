@@ -26,18 +26,18 @@ my first app so please don't judge too hard
 public class MainActivity extends Activity implements OnDragListener, View.OnLongClickListener, OnClickListener {
 
     private static final String TAG = "MainActivityJunk";
-    MediaPlayer singleSoundByte;                                        //used in onClick and playSingleSoundByte method
-    int singleSoundByteID;                                              //used in onClick and playSingleSoundByte methods
-    static Button drum1,drum2, drum3;                                   //used in onClick and buttonSelection methods
-    RelativeLayout rel1, rel2;                                          //used in onDrag, isSpaceOpen, occupySpace, openSpace methods
-    LinearLayout bottom_lin_container;                                  //used to setOnDragListener as to allow deleting of buttons
-    HorizontalScrollView bottom_hor_container;                          //used to setOnDragListener as to allow deleting of buttons
-    Button delete;                                                      //used to setOnDragListener as to allow deleting of buttons
-    int snappedXCoord;                                                  //used in onDrag, buttonSelection, isSpaceOpen, occupySpace methods
-    int initialXCoord;                                                  //used in onLongClick and openSpace methods
-    int drumPlacement1[] = new int[30];                                 //used in isSpaceOpen, occupySpace and openSpace methods
-    int drumPlacement2[] = new int[30];                                 //used in isSpaceOpen, occupySpace and openSpace methods
-    int ribbonLengthInDP = 1200;                                        //used in onDrag method
+    MediaPlayer singleSoundByte;
+    int singleSoundByteID;
+    static Button drum1,drum2, drum3;
+    RelativeLayout rel1, rel2;
+    LinearLayout bottom_lin_container;                                  
+    HorizontalScrollView bottom_hor_container;
+    Button delete;
+    int snappedXCoord;
+    int initialXCoord;
+    int drumPlacement1[] = new int[30];
+    int drumPlacement2[] = new int[30];
+    int ribbonLengthInDP = 1200;
     int minTileLengthInDP = 40;
 
 
@@ -150,10 +150,10 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     ViewGroup draggedImageViewParentLayout = (ViewGroup) draggedButtonView.getParent();
 
                     //call openSpace method to ensure the dragged button in the ribbons' space has been freed as to allow the next button to be placed
-                    openSpace(draggedButtonView.getWidth(), draggedImageViewParentLayout);
+                    openSpace(initialXCoord, draggedButtonView.getWidth(), draggedImageViewParentLayout);
 
                     //will run only if the area where button is to be placed is not occupied
-                    if (isSpaceOpen(draggedButtonView.getWidth(), receivingLayoutView)) {
+                    if (isSpaceOpen((snappedXCoord - (draggedButtonView.getWidth() / 2)), draggedButtonView.getWidth(), receivingLayoutView)) { //(snappedXCoord- (button.getWidth() / 2) sends coords at beginning of button
 
                         switch (draggedImageViewParentLayout.getId()) {
 
@@ -173,7 +173,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                         }
 
                     } else {
-                        occupySpace((initialXCoord + (draggedButtonView.getWidth() / 2)),draggedButtonView.getWidth(), draggedImageViewParentLayout);
+                        occupySpace(initialXCoord, draggedButtonView.getWidth(), draggedImageViewParentLayout);
                         Log.i(TAG, "ACTION_DROP else of the if statement - space is not open");
                         return false;
                     }
@@ -264,9 +264,9 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
         Log.i(TAG, "button drum width = " + button.getWidth());
 
-        if (isSpaceOpen(button.getWidth(),layout)) {
+        if (isSpaceOpen((snappedXCoord - (button.getWidth() / 2)), button.getWidth(), layout)) {    //(snappedXCoord- (button.getWidth() / 2) sends coords at beginning of button
 
-            occupySpace(snappedXCoord, button.getWidth(), layout);
+            occupySpace(snappedXCoord - (button.getWidth() / 2), button.getWidth(), layout);         //(snappedXCoord- (button.getWidth() / 2) sends coords at beginning of button
 
             Button drumCloned = new Button(this);                           //create new button so that we don't have to use removeView on the original button
             drumCloned.setId(button.getId());                               //create id in ids.xml so that new button can be referred to in onClick method
@@ -317,161 +317,130 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     }
 
     //evaluates if the button has enough space to fit in drop zone
-    private boolean isSpaceOpen(int buttonwidth,View layout)                        //uses the width of the button for parameter calculations and layout to determine which ribbon the button resides in
-    {
-        int x;
-        boolean spaceOpen = true;                                                   //return default of true when the if statement doesn't execute
+    private boolean isSpaceOpen(int coordinates, int buttonWidth, View layout) {
+
+        boolean spaceOpen;
 
         switch (layout.getId()) {
             case R.id.rel1:
 
-                //cycles through the length of the button at this specific
-                //area where button was dropped in the array
-                for(int i = 0; dpToPx(minTileLengthInDP)*i/buttonwidth < 1; i++) {                 //when dpToPx(minTileLengthInDP)*i/buttonwidth reaches a value 1 then means has gone through entire width of button
+                spaceOpen = arrayOccupancyCheck(coordinates, buttonWidth, drumPlacement1);
 
-                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(minTileLengthInDP)) + i;     //formula to determine index of the array
-
-                    if (drumPlacement1[x] == 1) {                                                  //if that specific index of the array = 1 then that space is already occupied
-
-                        Log.i(TAG, "isSpaceOpen method case rel1 - Can't place button");
-                        spaceOpen = false;
-                        break;
-                    } else {
-                        Log.i(TAG, "isSpaceOpen method returning true");
-                    }
-                }
                 break;
             case R.id.rel2:
 
-                for(int i = 0; dpToPx(minTileLengthInDP)*i/buttonwidth < 1; i++) {
+                spaceOpen = arrayOccupancyCheck(coordinates, buttonWidth, drumPlacement2);
 
-                    x = ((snappedXCoord - (buttonwidth / 2)) / dpToPx(minTileLengthInDP)) + i;
-
-                    if (drumPlacement2[x] == 1) {
-
-                        Log.i(TAG, "isSpaceOpen method case rel2 - Can't place button");
-                        spaceOpen = false;
-                        break;
-                    }
-                }
                 break;
             default:
 
                 Log.i(TAG, "isSpaceOpen method case default - parent view wasn't rel1 or rel2");
+                spaceOpen = false;
+
                 break;
-        } return spaceOpen;                                                         //return either true or false
+        } return spaceOpen; //return either true or false
+    }
+
+    private boolean arrayOccupancyCheck(int coordinates, int buttonWidth,int[] myArray) {
+
+        int x;
+        boolean spaceOpen = true;                                                   //return default of true when the if statement doesn't execute
+
+        //cycles through the length of the button at this specific
+        //area where button was dropped in the array
+        for (int i = 0; dpToPx(minTileLengthInDP) * i / buttonWidth < 1; i++) {     //when dpToPx(minTileLengthInDP)*i/buttonWidth reaches a value 1 then means has gone through entire width of button
+
+            x = ((coordinates / dpToPx(minTileLengthInDP)) + i);                    //formula to determine index of the array
+
+            if (myArray[x] == 1) {                                                  //if that specific index of the array = 1 then that space is already occupied
+
+                Log.i(TAG, "arrayOccupancyCheck method case - Can't place button");
+                spaceOpen = false;
+                break;
+            } else {
+                Log.i(TAG, "arrayOccupancyCheck method returning true");
+            }
+        }
+        return spaceOpen; //return either true or false
     }
 
     //renders area where button was dropped unavailable/full
-    private void occupySpace(int coordinates, int buttonWidth,View layout) {                         //uses the width of the button for parameter calculations and layout to determine which ribbon
-        int x;
-        float u;
-        int i = 0;
+    private void occupySpace(int coordinates, int buttonWidth,View layout) {
 
         switch (layout.getId()) {
-            case R.id.rel1:
+            case R.id.rel1:     //rel1 relates to drumPlacement1
 
-                do {
-                    x = ((coordinates - (buttonWidth / 2)) / dpToPx(minTileLengthInDP)) + i;     //formula to determine index of the array
-                    drumPlacement1[x] = 1;                                                         //assigns a value of 1 to index to close the space
-                    i++;
-                    u = dpToPx(minTileLengthInDP) * i;
-                }
-                while (u / buttonWidth < 1);
+                arrayCycler (coordinates, buttonWidth,drumPlacement1 , 1);  //pass 1 for arrayValue parameter to close space
+
                 break;
-            case R.id.rel2:
+            case R.id.rel2:     //rel2 relates to drumPlacement2
 
-                do {
-                    x = ((coordinates - (buttonWidth / 2)) / dpToPx(minTileLengthInDP)) + i;
-                    drumPlacement2[x] = 1;
-                    i++;
-                    u = dpToPx(minTileLengthInDP) * i;
-                }
-                while (u / buttonWidth < 1);
+                arrayCycler (coordinates, buttonWidth,drumPlacement2 , 1);
+
                 break;
             default:
+
                 Log.i(TAG, "occupySpace method case default");
+
                 break;
         }
     }
 
     //renders area where button was dropped available/open
-    private void openSpace(int buttonWidth,View layout) {                         //uses the width of the button for parameter calculations and layout to determine which ribbon
+    private void openSpace(int coordinates, int buttonWidth, View layout) {
+
+        switch (layout.getId()) {
+            case R.id.rel1:     //rel1 relates to drumPlacement1
+
+                arrayCycler (coordinates, buttonWidth,drumPlacement1 , 0);  //pass 0 for arrayValue parameter to close space
+
+                break;
+            case R.id.rel2:     //rel2 relates to drumPlacement2
+
+                arrayCycler (coordinates, buttonWidth,drumPlacement2 , 0);
+
+                break;
+            default:
+
+                Log.i(TAG, "openSpace method case default");
+
+                break;
+        }
+    }
+
+    private void arrayCycler (int coordinates, int buttonWidth,int[] myArray , int arrayValue) {
+
         int x;
         float u;
         int i = 0;
 
-        switch (layout.getId()) {
-            case R.id.rel1:
-
-                do {
-                    x = (initialXCoord / dpToPx(minTileLengthInDP)) + i;            //formula to determine index of the array
-                    drumPlacement1[x] = 0;                                          //assigns a value of 0 to index to open the space
-                    i++;
-                    u = dpToPx(minTileLengthInDP) * i;
-                }
-                while (u / buttonWidth < 1);
-                break;
-            case R.id.rel2:
-
-                do {
-                    x = (initialXCoord  / dpToPx(minTileLengthInDP)) + i;
-                    drumPlacement2[x] = 0;
-                    i++;
-                    u = dpToPx(minTileLengthInDP) * i;
-                }
-                while (u / buttonWidth < 1);
-                break;
-            default:
-                Log.i(TAG, "openSpace method case default");
-                break;
+        do {
+            x = (coordinates / dpToPx(minTileLengthInDP)) + i;      //formula to determine index of the array
+            myArray[x] = arrayValue;                                //assigns a value of 0 or 1 to the array index to open or close the space
+            i++;
+            u = dpToPx(minTileLengthInDP) * i;                      //this calculates increments of minTileLengthInDP as to cycle through each increment of buttonWidth
         }
+        while (u / buttonWidth < 1);                                //when u / buttonWidth = 1 it would mean that the loop has cycled through the full button length
+
     }
 
     public void runLoop()   //used to show array index values
     {
         {
             int i;
+            int u;
 
             for (i = 0; i < drumPlacement1.length; i++) {
                 Log.i(TAG, "drumPlacement1 [" + i + "] = " + drumPlacement1[i]);
             }
-        }
-        {
-            int i;
 
-            for (i = 0; i < drumPlacement2.length; i++) {
-                Log.i(TAG, "drumPlacement2 [" + i + "] = " + drumPlacement2[i]);
+            for (u = 0; u < drumPlacement2.length; u++) {
+                Log.i(TAG, "drumPlacement2 [" + u + "] = " + drumPlacement2[u]);
             }
         }
     }
 
-    public void test()
-    {
-        float a = 0;
-        float b = 1;
-        float c = 19;
-        float d = 20;
-        float e = 21;
-        float f = 39;
-        float g = 40;
-        float h = 41;
-        float i = 59;
-        float j = 60;
-        float k = 61;
-
-        Log.i(TAG, "Math.round : " + a + " = " +  minTileLengthInDP*(Math.round(a/minTileLengthInDP)) );
-        Log.i(TAG, "Math.round : " + b + " = " +  minTileLengthInDP*(Math.round(b/minTileLengthInDP)) );
-        Log.i(TAG, "Math.round : " + c + " = " +  minTileLengthInDP*(Math.round(c/minTileLengthInDP)) );
-        Log.i(TAG, "Math.round : " + d + " = " +  minTileLengthInDP*(Math.round(d/minTileLengthInDP)) );
-        Log.i(TAG, "Math.round : " + e + " = " +  minTileLengthInDP*(Math.round(e/minTileLengthInDP)) );
-        Log.i(TAG, "Math.round : " + f + " = " +  minTileLengthInDP*(Math.round(f/minTileLengthInDP)) );
-        Log.i(TAG, "Math.round : " + g + " = " +  minTileLengthInDP*(Math.round(g/minTileLengthInDP)) );
-        Log.i(TAG, "Math.round : " + h + " = " +  minTileLengthInDP*(Math.round(h/minTileLengthInDP)) );
-        Log.i(TAG, "Math.round : " + i + " = " +  minTileLengthInDP*(Math.round(i/minTileLengthInDP)) );
-        Log.i(TAG, "Math.round : " + j + " = " +  minTileLengthInDP*(Math.round(j/minTileLengthInDP)) );
-        Log.i(TAG, "Math.round : " + k + " = " +  minTileLengthInDP*(Math.round(k/minTileLengthInDP)) );
-    }
+    public void test() {}
 }
 
 
