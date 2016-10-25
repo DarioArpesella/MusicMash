@@ -30,9 +30,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     int singleSoundByteID;
     static Button drum1,drum2, drum3;
     RelativeLayout rel1, rel2;
-    LinearLayout bottom_lin_container;                                  
+    LinearLayout bottom_lin_container;
     HorizontalScrollView bottom_hor_container;
-    Button delete;
     int snappedXCoord;
     int initialXCoord;
     int drumPlacement1[] = new int[30];
@@ -50,8 +49,6 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         drum1 = (Button) findViewById(R.id.drum1);
         drum2 = (Button) findViewById(R.id.drum2);
         drum3 = (Button) findViewById(R.id.drum3);
-        delete = (Button) findViewById(R.id.delete);
-
 
         //link each layout to its respective xml id
         rel1 = (RelativeLayout) findViewById(R.id.rel1);
@@ -69,7 +66,6 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         rel2.setOnDragListener(this);
         bottom_lin_container.setOnDragListener(this);
         bottom_hor_container.setOnDragListener(this);
-        delete.setOnDragListener(this);
     }
 
     //called when button has been touched and held
@@ -319,7 +315,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     //evaluates if the button has enough space to fit in drop zone
     private boolean isSpaceOpen(int coordinates, int buttonWidth, View layout) {
 
-        boolean spaceOpen;
+        boolean spaceOpen = true;
 
         switch (layout.getId()) {
             case R.id.rel1:
@@ -335,7 +331,6 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
             default:
 
                 Log.i(TAG, "isSpaceOpen method case default - parent view wasn't rel1 or rel2");
-                spaceOpen = false;
 
                 break;
         } return spaceOpen; //return either true or false
