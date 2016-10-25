@@ -18,7 +18,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-
 /*put a synopsis here
 my first app so please don't judge too hard
 */
@@ -28,7 +27,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     private static final String TAG = "MainActivityJunk";
     MediaPlayer singleSoundByte;
     int singleSoundByteID;
-    static Button drum1,drum2, drum3;
+    static Button drum1, drum2, drum3;
     RelativeLayout rel1, rel2;
     LinearLayout bottom_lin_container;
     HorizontalScrollView bottom_hor_container;
@@ -38,7 +37,6 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     int drumPlacement2[] = new int[30];
     int ribbonLengthInDP = 1200;
     int minTileLengthInDP = 40;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +73,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         //create clip data holding data of the type MIMETYPE_TEXT_PLAIN
         ClipData clipData = ClipData.newPlainText("", "");
 
-        initialXCoord = snap((int)imageView.getX());    //used to capture x-coords before onDrag begins
+        initialXCoord = snap((int) imageView.getX());    //used to capture x-coords before onDrag begins
 
         View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(imageView);
         //start the drag - contains the data to be dragged,
@@ -101,8 +99,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 if (dragEvent.getClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN)) {
                     Log.i(TAG, "Can accept this data");
 
-                    // returns true to indicate that the View can accept the dragged data.
-                    return true;
+                    return true; // returns true to indicate that the View can accept the dragged data.
 
                 } else {
                     Log.i(TAG, "Can not accept this data");
@@ -114,18 +111,17 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
             case DragEvent.ACTION_DRAG_ENTERED:
                 Log.i(TAG, "drag action entered");
-//                the drag point has entered the bounding box
+                //the drag point has entered the bounding box
                 return true;
 
             case DragEvent.ACTION_DRAG_LOCATION:
                 Log.i(TAG, "drag action location");
-                /*triggered after ACTION_DRAG_ENTERED
-                stops after ACTION_DRAG_EXITED*/
+                //triggered after ACTION_DRAG_ENTERED and stops after ACTION_DRAG_EXITED
                 return true;
 
             case DragEvent.ACTION_DRAG_EXITED:
                 Log.i(TAG, "drag action exited");
-//                the drag shadow has left the bounding box
+                //the drag shadow has left the bounding box
                 return true;
 
             case DragEvent.ACTION_DROP:
@@ -136,7 +132,7 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
                 //dragEvent.getX() gets the x coordinate of where button was dropped.
                 //Coordinates then get sent to the snap method
-                snappedXCoord = snap((int)dragEvent.getX());
+                snappedXCoord = snap((int) dragEvent.getX());
 
                 //used to set "bounding area" of where one can drop the button
                 if ((snappedXCoord - (draggedButtonView.getWidth() / 2)) >= 0 && (snappedXCoord + (draggedButtonView.getWidth() / 2)) <= dpToPx(ribbonLengthInDP)) {
@@ -145,27 +141,19 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                     //and to also remove button which was dragged in one of the ribbons
                     ViewGroup draggedImageViewParentLayout = (ViewGroup) draggedButtonView.getParent();
 
-                    //call openSpace method to ensure the dragged button in the ribbons' space has been freed as to allow the next button to be placed
+                    //call openSpace method to ensure the dragged button in the ribbons' space has been freed from original drag area as to allow the next button to be placed
                     openSpace(initialXCoord, draggedButtonView.getWidth(), draggedImageViewParentLayout);
 
                     //will run only if the area where button is to be placed is not occupied
-                    if (isSpaceOpen((snappedXCoord - (draggedButtonView.getWidth() / 2)), draggedButtonView.getWidth(), receivingLayoutView)) { //(snappedXCoord- (button.getWidth() / 2) sends coords at beginning of button
+                    if (isSpaceOpen((snappedXCoord - (draggedButtonView.getWidth() / 2)), draggedButtonView.getWidth(), receivingLayoutView)) { //(snappedXCoord - (button.getWidth() / 2) sends coords at beginning of button
 
-                        switch (draggedImageViewParentLayout.getId()) {
+                        if (ribbon(draggedImageViewParentLayout)) {                             //remove button if draggedImageViewParentLayout is a ribbon
+                            draggedImageViewParentLayout.removeView(draggedButtonView);
+                        }
 
-                            case R.id.rel1:
-                                Log.i(TAG, "the parent view of this button is rel1");
-                                draggedImageViewParentLayout.removeView(draggedButtonView);         //remove button from parent view
-                                break;
-
-                            case R.id.rel2:
-                                Log.i(TAG, "the parent view of this button is rel2");
-                                draggedImageViewParentLayout.removeView(draggedButtonView);
-                                break;
-
-                            default:
-                                Log.i(TAG, "default case in ACTION_DROP switch - parent view wasn't rel1 or rel2 so don't delete any buttons");
-                                break;
+                        if (ribbon(receivingLayoutView)) {                                      //create button if receivingLayoutView is a ribbon
+                            buttonCreate(draggedButtonView, receivingLayoutView);
+                            occupySpace(snappedXCoord - (draggedButtonView.getWidth() / 2), draggedButtonView.getWidth(), receivingLayoutView); //(snappedXCoord- (button.getWidth() / 2) sends coords at beginning of button
                         }
 
                     } else {
@@ -174,22 +162,6 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                         return false;
                     }
 
-                    //Looks at id of view button was dropped in and adds that button clone in said view (relative layout)
-                    switch (receivingLayoutView.getId()) {
-                        case R.id.rel1:
-
-                            buttonSelection(draggedButtonView, receivingLayoutView);    //sends button and layout into buttonSelection method
-                            break;
-
-                        case R.id.rel2:
-
-                            buttonSelection(draggedButtonView, receivingLayoutView);
-                            break;
-
-                        default:
-                            Log.i(TAG, "default case in ACTION_DROP switch");
-                            break;
-                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "ACTION_DROP else statement - Can't drop out of bounding area", Toast.LENGTH_SHORT).show();
                     return false;
@@ -199,9 +171,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
                 Log.i(TAG, "drag action ended");
                 Log.i(TAG, "getResult: " + dragEvent.getResult());
-
                 return true;
-            // An unknown action type was received.
+
             default:
                 Log.i(TAG, "Unknown action type received by OnDragListener.");
                 break;
@@ -219,23 +190,33 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
                 singleSoundByteID = R.raw.drum1;    //give button sound byte id to be used in playSingleSoundByte method
                 playSingleSoundByte();
                 break;
+
             case R.id.drum2:
                 singleSoundByteID = R.raw.drum2;
                 playSingleSoundByte();
                 break;
+
             case R.id.drum3:
                 singleSoundByteID = R.raw.drum3;
                 playSingleSoundByte();
                 break;
+
             case R.id.playlist:                     //used to show array index values
                 runLoop();
                 break;
+
             case R.id.test:                         //used to test random shit
                 test();
                 break;
+
             default:
                 break;
         }
+    }
+
+    public boolean ribbon(View layout) {
+
+        return (layout == rel1 || layout == rel2);
     }
 
     //plays the sound byte which was tapped. If it is already playing and is tapped again then will
@@ -253,46 +234,35 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         }
     }
 
-    public boolean buttonSelection(View button, View layout) {
+    //creates a copy of the original into the layout it was dropped into
+    public boolean buttonCreate(View button, View layout) {
 
         RelativeLayout layoutHolder = (RelativeLayout) findViewById(layout.getId());    //gets the id of layout and places it in layoutHolder
         Button buttonHolder = (Button) button;                                          //parse View button to Button so that can set properties of drumCloned
 
-        Log.i(TAG, "button drum width = " + button.getWidth());
+        Button drumCloned = new Button(this);                           //create new button so that we don't have to use removeView on the original button
+        drumCloned.setId(button.getId());                               //create id in ids.xml so that new button can be referred to in onClick method
+        drumCloned.setText(buttonHolder.getText());                     //getText so that buttons look identical
+        drumCloned.setOnClickListener(this);                            //setOnClickListener so that new button id can be sent to onClick method when tapped
+        drumCloned.setOnLongClickListener(this);                        //setOnLongClickListener so that new button can be dragged
+        drumCloned.setWidth(buttonHolder.getWidth());                   //setWidth so that buttons look identical
+        drumCloned.setHeight(buttonHolder.getHeight());                 //setHeight so that buttons look identical
+        drumCloned.setBackgroundResource(R.drawable.drums);             //setBackgroundResource so that drum buttons look identical
+        drumCloned.setMinimumWidth(1);                                  //setMinimumWidth to override default so that buttons appear correctly
+        drumCloned.setMinimumHeight(1);                                 //setMinimumHeight to override default so that buttons appear correctly
+        drumCloned.setX(snappedXCoord - (buttonHolder.getWidth() / 2)); //positions button where dropped ( width /2 , because x-coord of drop is where finger was released and x-coord of button is at the left side of button)
+        layoutHolder.addView(drumCloned);                               //add the new drum1Cloned button to layout
+        return true;
 
-        if (isSpaceOpen((snappedXCoord - (button.getWidth() / 2)), button.getWidth(), layout)) {    //(snappedXCoord- (button.getWidth() / 2) sends coords at beginning of button
-
-            occupySpace(snappedXCoord - (button.getWidth() / 2), button.getWidth(), layout);         //(snappedXCoord- (button.getWidth() / 2) sends coords at beginning of button
-
-            Button drumCloned = new Button(this);                           //create new button so that we don't have to use removeView on the original button
-            drumCloned.setId(button.getId());                               //create id in ids.xml so that new button can be referred to in onClick method
-            drumCloned.setText(buttonHolder.getText());                     //getText so that buttons look identical
-            drumCloned.setOnClickListener(this);                            //setOnClickListener so that new button id can be sent to onClick method when tapped
-            drumCloned.setOnLongClickListener(this);                        //setOnLongClickListener so that new button can be dragged
-            drumCloned.setWidth(buttonHolder.getWidth());                   //setWidth so that buttons look identical
-            drumCloned.setHeight(buttonHolder.getHeight());                 //setHeight so that buttons look identical
-            drumCloned.setBackgroundResource(R.drawable.drums);             //setBackgroundResource so that drum buttons look identical
-            drumCloned.setMinimumWidth(1);                                  //setMinimumWidth to override default so that buttons appear correctly
-            drumCloned.setMinimumHeight(1);                                 //setMinimumHeight to override default so that buttons appear correctly
-            drumCloned.setX(snappedXCoord - (buttonHolder.getWidth() / 2)); //positions button where dropped ( width /2 , because x-coord of drop is where finger was released and x-coord of button is at the left side of button)
-            layoutHolder.addView(drumCloned);                               //add the new drum1Cloned button to layout
-
-            return true;
-
-        } else {
-            Log.i(TAG, "buttonSelection method if statement - Can't place button");
-            return false;
-        }
     }
 
     //gives the button which was dropped a "snap" function of 40dp increments
-    private int snap(int px)
-    {
+    private int snap(int px) {
         float dpXCoord = pxToDp(px);                                              //takes the x-coordinates in pixels and converts to dp
 
         Log.i(TAG, "x coord in dp before rounding = " + dpXCoord);
 
-        dpXCoord = minTileLengthInDP*(Math.round(dpXCoord/minTileLengthInDP));    //rounds off the dp to the closest increment of 40
+        dpXCoord = minTileLengthInDP * (Math.round(dpXCoord / minTileLengthInDP));    //rounds off the dp to the closest increment of 40
 
         Log.i(TAG, "x coord in dp after rounding = " + dpXCoord);                 //prints x-coordinates in dp and not px
 
@@ -301,14 +271,12 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     }
 
     //converts dp to px's
-    public static int dpToPx(int dp)
-    {
+    public static int dpToPx(int dp) {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
     //converts px's to dp
-    public static int pxToDp(int px)
-    {
+    public static int pxToDp(int px) {
         return (int) (px / Resources.getSystem().getDisplayMetrics().density);
     }
 
@@ -319,24 +287,22 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
         switch (layout.getId()) {
             case R.id.rel1:
-
                 spaceOpen = arrayOccupancyCheck(coordinates, buttonWidth, drumPlacement1);
-
                 break;
+
             case R.id.rel2:
-
                 spaceOpen = arrayOccupancyCheck(coordinates, buttonWidth, drumPlacement2);
-
                 break;
+
             default:
-
                 Log.i(TAG, "isSpaceOpen method case default - parent view wasn't rel1 or rel2");
-
                 break;
-        } return spaceOpen; //return either true or false
+
+        }
+        return spaceOpen; //return either true or false
     }
 
-    private boolean arrayOccupancyCheck(int coordinates, int buttonWidth,int[] myArray) {
+    private boolean arrayOccupancyCheck(int coordinates, int buttonWidth, int[] myArray) {
 
         int x;
         boolean spaceOpen = true;                                                   //return default of true when the if statement doesn't execute
@@ -360,23 +326,19 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
     }
 
     //renders area where button was dropped unavailable/full
-    private void occupySpace(int coordinates, int buttonWidth,View layout) {
+    private void occupySpace(int coordinates, int buttonWidth, View layout) {
 
         switch (layout.getId()) {
             case R.id.rel1:     //rel1 relates to drumPlacement1
-
-                arrayCycler (coordinates, buttonWidth,drumPlacement1 , 1);  //pass 1 for arrayValue parameter to close space
-
+                arrayCycler(coordinates, buttonWidth, drumPlacement1, 1);  //pass 1 for arrayValue parameter to close space
                 break;
+
             case R.id.rel2:     //rel2 relates to drumPlacement2
-
-                arrayCycler (coordinates, buttonWidth,drumPlacement2 , 1);
-
+                arrayCycler(coordinates, buttonWidth, drumPlacement2, 1);
                 break;
+
             default:
-
                 Log.i(TAG, "occupySpace method case default");
-
                 break;
         }
     }
@@ -386,24 +348,20 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
 
         switch (layout.getId()) {
             case R.id.rel1:     //rel1 relates to drumPlacement1
-
-                arrayCycler (coordinates, buttonWidth,drumPlacement1 , 0);  //pass 0 for arrayValue parameter to close space
-
+                arrayCycler(coordinates, buttonWidth, drumPlacement1, 0);  //pass 0 for arrayValue parameter to close space
                 break;
+
             case R.id.rel2:     //rel2 relates to drumPlacement2
-
-                arrayCycler (coordinates, buttonWidth,drumPlacement2 , 0);
-
+                arrayCycler(coordinates, buttonWidth, drumPlacement2, 0);
                 break;
+
             default:
-
                 Log.i(TAG, "openSpace method case default");
-
                 break;
         }
     }
 
-    private void arrayCycler (int coordinates, int buttonWidth,int[] myArray , int arrayValue) {
+    private void arrayCycler(int coordinates, int buttonWidth, int[] myArray, int arrayValue) {
 
         int x;
         float u;
@@ -435,7 +393,8 @@ public class MainActivity extends Activity implements OnDragListener, View.OnLon
         }
     }
 
-    public void test() {}
+    public void test() {
+    }
 }
 
 
